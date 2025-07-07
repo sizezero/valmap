@@ -11,7 +11,7 @@ case class Location(
 
 object Location {
   enum Icon():
-    case Stones, Boss, Compass, Shack, Base, LineUp, LineDiag1, LineRight, LineDiag2, LineDown
+    case Stones, Boss, Compass, Shack, Base, LineUp, LineDiag1, LineRight, LineDiag2
 }
 
 case class Csv(

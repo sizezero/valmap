@@ -7,6 +7,8 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode
 import org.apache.pdfbox.util.Matrix
 
+import Location.Icon._
+
 object ValMap {
 
   def drawCompass(cos: PDPageContentStream, x: Float, y: Float): Unit = {
@@ -28,6 +30,32 @@ object ValMap {
     cos.setStrokingColor(Color.BLACK)
     val d = 7f
     cos.addRect(x-d, y-d, d*2, d*2)
+    cos.stroke()
+  }
+
+  def drawLine(cos: PDPageContentStream, icon: Location.Icon, x: Float, y: Float): Unit = {
+    cos.setLineWidth(5)
+    cos.setStrokingColor(Color.BLACK)
+    val d = 15f
+    icon match {
+      case LineUp => {
+        cos.moveTo(x,y-d)
+        cos.lineTo(x,y+d)
+      }
+      case LineDiag1 => {
+        cos.moveTo(x+d,y-d)
+        cos.lineTo(x-d,y-d)
+      }
+      case LineRight => {
+        cos.moveTo(x-d,y)
+        cos.lineTo(x+d,y)
+      }
+      case LineDiag2 => {
+        cos.moveTo(x-d,y+d)
+        cos.lineTo(x+d,y-d)
+      }
+      case _ =>
+    }
     cos.stroke()
   }
 
@@ -57,8 +85,9 @@ object ValMap {
 
     // draw simple cross compasses
     csv.locations.foreach{ (location) => location match {
-      case Location(_, xMeter, yMeter, Location.Icon.Compass) => drawCompass(cos, xMeter, yMeter)
-      case Location(_, xMeter, yMeter, Location.Icon.Shack) => drawShack(cos, xMeter, yMeter)
+      case Location(_, xMeter, yMeter, Compass) => drawCompass(cos, xMeter, yMeter)
+      case Location(_, xMeter, yMeter, Shack) => drawShack(cos, xMeter, yMeter)
+      case Location(_, xMeter, yMeter, LineUp | LineDiag1 | LineRight | LineDiag2) => drawLine(cos, location.icon, xMeter, yMeter)
       case _ =>
     }}
 
