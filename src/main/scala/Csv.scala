@@ -1,18 +1,30 @@
 import scala.annotation.tailrec
 
+// we use Float values instead of Doubles since the PDFBox library uses floats.
+
 case class Location(
   description: String,
-  xMeter: Double,
-  yMeter: Double,
-  image: String
+  xMeter: Float,
+  yMeter: Float,
+  icon: Location.Icon
 )
+
+object Location {
+  enum Icon():
+    case Stones, Boss, Compass, Shack, Base, LineUp, LineDiag1, LineRight, LineDiag2, LineDown
+}
 
 case class Csv(
     locations: List[Location]
 
-    // TODO: see if min max and bounds can be lazy vals
-
-)
+) {
+  lazy val minMetersX: Float = locations.reduce{ (l1,l2) => if (l1.xMeter < l2.xMeter) l1 else l2 }.xMeter
+  lazy val minMetersY: Float = locations.reduce{ (l1,l2) => if (l1.yMeter < l2.yMeter) l1 else l2 }.yMeter
+  lazy val maxMetersX: Float = locations.reduce{ (l1,l2) => if (l1.xMeter > l2.xMeter) l1 else l2 }.xMeter
+  lazy val maxMetersY: Float = locations.reduce{ (l1,l2) => if (l1.yMeter > l2.yMeter) l1 else l2 }.yMeter
+  lazy val boundMetersX: Float = maxMetersX-minMetersX
+  lazy val boundMetersY: Float = maxMetersY-minMetersY
+}
 
 object Csv {
 
@@ -41,12 +53,15 @@ object Csv {
         if (a.length != 6) Left(s"line does not have six elements: $line")
         else {
           // TODO: add some error processing for image
-          a(1).toDoubleOption match {
+          a(1).toFloatOption match {
             case None => mkError(lineNo, s"x meter value is not a double: ${a(1)}")
             case Some(xmeter) => {
-              a(2).toDoubleOption match {
+              a(2).toFloatOption match {
                 case None => mkError(lineNo, s"y meter value is not a double: ${a(2)}")
-                case Some(ymeter) => processLine(in.tail, lineNo, Location(a(0), xmeter, ymeter, a(5)) :: locations)
+                case Some(ymeter) => {
+                  val icon = Location.Icon.valueOf(a(5)) // TODO: need to error check
+                  processLine(in.tail, lineNo, Location(a(0), xmeter, ymeter, icon) :: locations)
+                }
               }
             }
           }
