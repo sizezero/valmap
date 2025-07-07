@@ -12,4 +12,5 @@ lazy val root = project
     libraryDependencies += "org.scala-lang" %% "toolkit" % "0.2.1",
     libraryDependencies += "org.scala-lang" %% "toolkit-test" % "0.2.1" % Test,
     libraryDependencies += "com.lihaoyi" %% "scalatags" % "0.12.0"
+    //libraryDependencies += "org.apache.pdfbox" %% "pdfbox" % "3.0.5"
   )

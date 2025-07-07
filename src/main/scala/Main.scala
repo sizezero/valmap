@@ -8,8 +8,18 @@
     println("valmap <csvfile>")
     sys.exit(1)
   } else {
-    val fname = args.head
-    println(fname)
+    val file: os.Path = os.Path(args.head)
+    Csv.parse(os.read.lines.stream(file)) match {
+      case Right(csv) => {
+        println("parsed")
+
+      }
+      case Left(error) => {
+        println(error)
+        sys.exit(1)
+      }
+    }
+
     sys.exit(0)
   }
 }
