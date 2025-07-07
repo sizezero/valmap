@@ -7,7 +7,12 @@
   */
 @main def main(args: String*): Unit = {
 
-  if (args.isEmpty) {
+  if (true) {
+    val pdf = PdfExamples.create()
+    val outfile = os.pwd / "valmap-output.pdf"
+    pdf.save(outfile.toString)
+    pdf.close()
+  } else if (args.isEmpty) {
     println("valmap <csvfile>")
     sys.exit(1)
   } else {
