@@ -175,18 +175,48 @@ object PdfBoxExamples {
       // draw the full form
       cos.drawForm(form)
 
-      // draw a scaled form
-      cos.saveGraphicsState()
-      val matrix: Matrix = Matrix.getScaleInstance(0.5f, 0.5f)
-      cos.transform(matrix)
+      // at the moment, bounds are the same for both the parent and embedded pdf
+      val rect = sourceDoc.getPage(0).getMediaBox()
+      val (boundx, boundy) = (rect.getUpperRightX(), rect.getUpperRightY())
+      val m2 = Matrix()
+
+      //val (sx, sy) = (0.5f, 0.5f)
+      //val (sx, sy) = (0.25f, 0.25f)
+      val (sx, sy) = (0.1f, 0.1f)
+      m2.scale(sx, sy) // this aligns the lower left corners of the two pdfs
+      cos.saveGraphicsState();
+      cos.transform(m2)
+      cos.setStrokingColor(Color.RED)
       cos.drawForm(form)
+      cos.stroke()
       cos.restoreGraphicsState()
 
-      // draw a scaled and rotated form
+      // center the embeded pdf in the lower left corner of the parent
+      m2.translate(-boundx/2f, -boundy/2f)
       cos.saveGraphicsState();
-      matrix.rotate(1.8 * Math.PI) // radians
-      cos.transform(matrix)
+      cos.transform(m2)
+      cos.setStrokingColor(Color.CYAN)
       cos.drawForm(form)
+      cos.stroke()
+      cos.restoreGraphicsState()
+
+      val (dx, dy) = (0.5f, 0.5f) // percentage move across the parent canvas from the lower left corner
+      val (parentx, parenty) = (boundx*dx, boundy*dy)
+      m2.translate(parentx/sx, parenty/sy) // translate moves in units of the shrunkeen embedded pdf so we need to adjust
+      cos.saveGraphicsState();
+      cos.transform(m2)
+      cos.setStrokingColor(Color.GREEN)
+      cos.drawForm(form)
+      cos.stroke()
+      cos.restoreGraphicsState()
+
+      // move up one quarter from center
+      m2.translate(0, boundy*0.25f/sy) // translate moves in units of the shrunkeen embedded pdf so we need to adjust
+      cos.saveGraphicsState();
+      cos.transform(m2)
+      cos.setStrokingColor(Color.MAGENTA)
+      cos.drawForm(form)
+      cos.stroke()
       cos.restoreGraphicsState()
 
       cos.close()
