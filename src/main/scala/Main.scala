@@ -8,7 +8,7 @@
 @main def main(args: String*): Unit = {
 
   if (true) {
-    val pdf = PdfExamples.create()
+    val pdf = PdfBoxExamples.create()
     val outfile = os.pwd / "valmap-output.pdf"
     pdf.save(outfile.toString)
     pdf.close()

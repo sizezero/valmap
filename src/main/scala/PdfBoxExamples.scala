@@ -79,10 +79,10 @@ object PdfBoxExamples {
 
   }
 
-  def drawDiagonal(cos: PDPageContentStream): Unit = {
+  def drawDiagonal(cos: PDPageContentStream, dx: Float, dy: Float): Unit = {
     cos.setLineWidth(1)
-    cos.moveTo(200, 200)
-    cos.lineTo(400, 400)
+    cos.moveTo(0, 0)
+    cos.lineTo(dx, dy)
     cos.closeAndStroke()
   }
 
@@ -121,22 +121,24 @@ object PdfBoxExamples {
       pdf.addPage(page7)
       val pageSize: PDRectangle = page7.getMediaBox()
       val pageWidth: Float = pageSize.getWidth()
+      val pageHeight: Float = pageSize.getHeight()
       // only change from default is first false which disables compression
       val cos: PDPageContentStream = new PDPageContentStream(pdf, page7, AppendMode.OVERWRITE, false, false)
       // add the rotation using the current transformation matrix
       // including a translation of pageWidth to use the lower left corner as 0,0 reference
       cos.transform(new Matrix(0, 1, -1, 0, pageWidth, 0))
-      drawDiagonal(cos)
+      // page width and height are exchanged
+      drawDiagonal(cos, pageHeight, pageWidth)
       cos.close()
 
       // non-landscape use of drawDiagonal()
       val page8: PDPage = new PDPage(PDRectangle.LETTER)
       pdf.addPage(page8)
       val cos2: PDPageContentStream = new PDPageContentStream(pdf, page8)
-      drawDiagonal(cos2)
+      drawDiagonal(cos2, pageWidth, pageHeight)
       cos2.close()
     }
 
-    Right(pdf)
+    pdf
   }
 }
