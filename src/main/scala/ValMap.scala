@@ -29,7 +29,10 @@ object ValMap {
     cos.setLineWidth(5)
     cos.setStrokingColor(Color.BLACK)
     val d = 7f
-    cos.addRect(x-d, y-d, d*2, d*2)
+    cos.moveTo(x-d, y-d)
+    cos.lineTo(x, y+d)
+    cos.lineTo(x+d, y-d)
+    cos.lineTo(x-d, y-d)
     cos.stroke()
   }
 
