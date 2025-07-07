@@ -6,6 +6,8 @@ import org.apache.pdfbox.pdmodel.font.{PDType1Font, Standard14Fonts}
 import org.apache.pdfbox.pdmodel.common.PDRectangle
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode
 import org.apache.pdfbox.util.Matrix
+import org.apache.pdfbox.multipdf.LayerUtility
+import org.apache.pdfbox.pdmodel.graphics.form.PDFormXObject
 
 object PdfBoxExamples {
 
@@ -86,6 +88,25 @@ object PdfBoxExamples {
     cos.closeAndStroke()
   }
 
+  def crossPage(): PDDocument = {
+    val doc = new PDDocument()
+    val page = new PDPage(PDRectangle.LETTER)
+    doc.addPage(page)
+    val rect: PDRectangle = page.getMediaBox()
+    val cos: PDPageContentStream = new PDPageContentStream(doc, page)
+    cos.setLineWidth(5)
+    cos.addRect(rect.getLowerLeftX(), rect.getLowerLeftY(), rect.getUpperRightX(), rect.getUpperRightY())
+    cos.stroke()
+    cos.moveTo(rect.getLowerLeftX(), rect.getLowerLeftY())
+    cos.lineTo(rect.getUpperRightX(), rect.getUpperRightY())
+    cos.stroke()
+    cos.moveTo(rect.getLowerLeftX(), rect.getUpperRightY())
+    cos.lineTo(rect.getUpperRightX(), rect.getLowerLeftY())
+    cos.stroke()
+    cos.close()
+    doc
+  }
+
   def create(): PDDocument = {
     val pdf = new PDDocument()
 
@@ -137,6 +158,38 @@ object PdfBoxExamples {
       val cos2: PDPageContentStream = new PDPageContentStream(pdf, page8)
       drawDiagonal(cos2, pageWidth, pageHeight)
       cos2.close()
+    }
+
+    // embed pdf in pdf
+    {
+      val sourceDoc = crossPage()
+
+      val page = new PDPage(PDRectangle.LETTER)
+      pdf.addPage(page)
+      val cos = new PDPageContentStream(pdf, page)
+
+      // Create a Form XObject from the source document using LayerUtility
+      val layerUtility: LayerUtility = new LayerUtility(pdf)
+      val form: PDFormXObject = layerUtility.importPageAsForm(sourceDoc, 0) // 0 is page number in source doc
+
+      // draw the full form
+      cos.drawForm(form)
+
+      // draw a scaled form
+      cos.saveGraphicsState()
+      val matrix: Matrix = Matrix.getScaleInstance(0.5f, 0.5f)
+      cos.transform(matrix)
+      cos.drawForm(form)
+      cos.restoreGraphicsState()
+
+      // draw a scaled and rotated form
+      cos.saveGraphicsState();
+      matrix.rotate(1.8 * Math.PI) // radians
+      cos.transform(matrix)
+      cos.drawForm(form)
+      cos.restoreGraphicsState()
+
+      cos.close()
     }
 
     pdf
