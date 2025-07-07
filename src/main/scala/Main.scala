@@ -11,8 +11,8 @@
     println("valmap <csvfile>")
     sys.exit(1)
   } else {
-    val file: os.Path = os.Path(args.head)
-    Csv.parse(os.read.lines.stream(file)) match {
+    val file: os.Path = os.Path(args.head, os.pwd)
+    Csv.parse(file.toString, os.read.lines.stream(file)) match {
       case Right(csv) => {
         ValMap.create(csv) match {
           case Right(pdf) => {
