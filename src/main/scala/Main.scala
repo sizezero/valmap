@@ -16,12 +16,13 @@
       case Right(csv) => {
         ValMap.create(csv) match {
           case Right(pdf) => {
-            println("eventually write the pdf")
+            val outfile = os.pwd / "valmap-output.pdf"
+            pdf.save(outfile.toString)
+            pdf.close()
           }
           case Left(error) => {
             println(error)
             sys.exit(1)
-
           }
         }
       }
