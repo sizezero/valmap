@@ -16,7 +16,6 @@ object Location {
 
 case class Csv(
     locations: List[Location]
-
 ) {
   lazy val minMetersX: Float = locations.reduce{ (l1,l2) => if (l1.xMeter < l2.xMeter) l1 else l2 }.xMeter
   lazy val minMetersY: Float = locations.reduce{ (l1,l2) => if (l1.yMeter < l2.yMeter) l1 else l2 }.yMeter
@@ -72,7 +71,7 @@ object Csv {
     skipToLocations(g.toSeq, 0) match {
         case Right((prevLineNo, input)) => {
           processLine(prevLineNo, input, Nil) match {
-            case Right(locations) => Right(Csv(locations))
+            case Right(locations) => Right(Csv(locations.reverse))
             case Left(error) => Left(error)
           }
         }

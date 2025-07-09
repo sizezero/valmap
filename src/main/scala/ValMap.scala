@@ -36,6 +36,23 @@ object ValMap {
     cos.stroke()
   }
 
+  def drawBase(cos: PDPageContentStream, x: Float, y: Float): Unit = {
+    // TODO: may want to save state. I'm not sure if they can stack.
+    cos.setLineWidth(5)
+    cos.setStrokingColor(Color.BLACK)
+    val d = 7f
+    cos.moveTo(x-1.5f*d, y-d)
+    cos.lineTo(x-1.5f*d, y+d)
+    cos.lineTo(x-0.5f*d, y+d)
+    cos.lineTo(x-0.5f*d, y)
+    cos.lineTo(x+0.5f*d, y)
+    cos.lineTo(x+0.5f*d, y+d)
+    cos.lineTo(x+1.5f*d, y+d)
+    cos.lineTo(x+1.5f*d, y-d)
+    cos.lineTo(x-1.5f*d, y-d)
+    cos.stroke()
+  }
+
   def drawLine(cos: PDPageContentStream, icon: Location.Icon, x: Float, y: Float): Unit = {
     cos.setLineWidth(5)
     cos.setStrokingColor(Color.BLACK)
@@ -59,6 +76,28 @@ object ValMap {
       }
       case _ =>
     }
+    cos.stroke()
+  }
+
+  def drawCircle(cos: PDPageContentStream, x: Float, y: Float, r: Float): Unit = {
+    val k: Float = 0.552284749831f
+    cos.moveTo(x - r, y)
+    cos.curveTo(x - r, y + k * r, x - k * r, y + r, x, y + r)
+    cos.curveTo(x + k * r, y + r, x + r, y + k * r, x + r, y)
+    cos.curveTo(x + r, y - k * r, x + k * r, y - r, x, y - r)
+    cos.curveTo(x - k * r, y - r, x - r, y - k * r, x - r, y)
+    cos.fill()
+  }
+
+  def drawBoss(cos: PDPageContentStream, x: Float, y: Float): Unit = {
+    cos.setLineWidth(5)
+    cos.setStrokingColor(Color.BLACK)
+    cos.setNonStrokingColor(Color.BLACK)
+    val r = 7f
+    drawCircle(cos, x, y, r)
+    cos.moveTo(x-r*1.5f, y+r*1.5f)
+    cos.lineTo(x, y)
+    cos.lineTo(x+r*1.5f, y+r*1.5f)
     cos.stroke()
   }
 
@@ -90,7 +129,9 @@ object ValMap {
     csv.locations.foreach{ (location) => location match {
       case Location(_, xMeter, yMeter, Compass) => drawCompass(cos, xMeter, yMeter)
       case Location(_, xMeter, yMeter, Shack) => drawShack(cos, xMeter, yMeter)
+      case Location(_, xMeter, yMeter, Base) => drawBase(cos, xMeter, yMeter)
       case Location(_, xMeter, yMeter, LineUp | LineDiag1 | LineRight | LineDiag2) => drawLine(cos, location.icon, xMeter, yMeter)
+      case Location(_, xMeter, yMeter, Boss) => drawBoss(cos, xMeter, yMeter)
       case _ =>
     }}
 
