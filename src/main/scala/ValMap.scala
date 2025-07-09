@@ -120,18 +120,20 @@ object ValMap {
     // I think now we can just use meters to draw
 
     // draw bounding box for the map
-    cos.setLineWidth(10)
-    cos.setStrokingColor(Color.GRAY)
-    cos.addRect(csv.minMetersX, csv.minMetersY, csv.maxMetersX-csv.minMetersX, csv.maxMetersY-csv.minMetersY)
-    cos.stroke()
+    if (csv.properties.bound) {
+      cos.setLineWidth(10)
+      cos.setStrokingColor(Color.GRAY)
+      cos.addRect(csv.minMetersX, csv.minMetersY, csv.maxMetersX-csv.minMetersX, csv.maxMetersY-csv.minMetersY)
+      cos.stroke()
+    }
 
     // draw simple cross compasses
     csv.locations.foreach{ (location) => location match {
-      case Location(_, xMeter, yMeter, Compass) => drawCompass(cos, xMeter, yMeter)
-      case Location(_, xMeter, yMeter, Shack) => drawShack(cos, xMeter, yMeter)
-      case Location(_, xMeter, yMeter, Base) => drawBase(cos, xMeter, yMeter)
-      case Location(_, xMeter, yMeter, LineUp | LineDiag1 | LineRight | LineDiag2) => drawLine(cos, location.icon, xMeter, yMeter)
-      case Location(_, xMeter, yMeter, Boss) => drawBoss(cos, xMeter, yMeter)
+      case Location(Compass, _, xMeter, yMeter) => drawCompass(cos, xMeter, yMeter)
+      case Location(Shack, _, xMeter, yMeter) => drawShack(cos, xMeter, yMeter)
+      case Location(Base, _, xMeter, yMeter) => drawBase(cos, xMeter, yMeter)
+      case Location(LineUp | LineDiag1 | LineRight | LineDiag2, _, xMeter, yMeter) => drawLine(cos, location.icon, xMeter, yMeter)
+      case Location(Boss, _, xMeter, yMeter) => drawBoss(cos, xMeter, yMeter)
       case _ =>
     }}
 
