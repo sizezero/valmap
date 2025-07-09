@@ -112,7 +112,7 @@ object ValMap {
     val bound = page.getMediaBox()
     val m = new Matrix()
     // for now scale the map width to the width of the page
-    val scale: Float = (bound.getWidth()-2*buffer) / csv.boundMetersX
+    val scale: Float = bound.getWidth() / (csv.boundMetersX+2*buffer)
     m.scale(scale, scale)
     m.translate(-csv.minMetersX+buffer, -csv.minMetersY+buffer)
     cos.saveGraphicsState();
