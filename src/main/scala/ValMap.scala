@@ -101,6 +101,15 @@ object ValMap {
     cos.stroke()
   }
 
+  def drawRoad(cos: PDPageContentStream, road: RoadLocation): Unit = {
+    cos.setLineWidth(3)
+    cos.setLineDashPattern(Array(3f), 0)
+    cos.setStrokingColor(Color.BLACK)
+    cos.moveTo(road.x1, road.y1)
+    cos.lineTo(road.x2, road.y2)
+    cos.stroke()
+  }
+
   def create(csv: Csv): Either[String, PDDocument] = {
     val pdf = new PDDocument()
     val page = new PDPage(PDRectangle.LETTER)
@@ -115,29 +124,36 @@ object ValMap {
     val scale: Float = bound.getWidth() / (csv.boundMetersX+2*buffer)
     m.scale(scale, scale)
     m.translate(-csv.minMetersX+buffer, -csv.minMetersY+buffer)
-    cos.saveGraphicsState();
     cos.transform(m)
     // I think now we can just use meters to draw
 
     // draw bounding box for the map
     if (csv.properties.bound) {
+      cos.saveGraphicsState();
       cos.setLineWidth(10)
       cos.setStrokingColor(Color.GRAY)
       cos.addRect(csv.minMetersX, csv.minMetersY, csv.maxMetersX-csv.minMetersX, csv.maxMetersY-csv.minMetersY)
       cos.stroke()
+      cos.restoreGraphicsState()
     }
 
     // draw simple cross compasses
-    csv.locations.foreach{ (location) => location match {
-      case Location(Compass, _, xMeter, yMeter) => drawCompass(cos, xMeter, yMeter)
-      case Location(Shack, _, xMeter, yMeter) => drawShack(cos, xMeter, yMeter)
-      case Location(Base, _, xMeter, yMeter) => drawBase(cos, xMeter, yMeter)
-      case Location(LineUp | LineDiag1 | LineRight | LineDiag2, _, xMeter, yMeter) => drawLine(cos, location.icon, xMeter, yMeter)
-      case Location(Boss, _, xMeter, yMeter) => drawBoss(cos, xMeter, yMeter)
-      case _ =>
+    csv.locations.foreach{ (location) => {
+      cos.saveGraphicsState()
+      location match {
+        case Location(Compass, _, xMeter, yMeter) => drawCompass(cos, xMeter, yMeter)
+        case Location(Shack, _, xMeter, yMeter) => drawShack(cos, xMeter, yMeter)
+        case Location(Base, _, xMeter, yMeter) => drawBase(cos, xMeter, yMeter)
+        case Location(LineUp, _, xMeter, yMeter) => drawLine(cos, LineUp, xMeter, yMeter)
+        case Location(LineDiag1, _, xMeter, yMeter) => drawLine(cos, LineDiag1, xMeter, yMeter)
+        case Location(LineRight, _, xMeter, yMeter) => drawLine(cos, LineRight, xMeter, yMeter)
+        case Location(LineDiag2, _, xMeter, yMeter) => drawLine(cos, LineDiag2, xMeter, yMeter)
+        case Location(Boss, _, xMeter, yMeter) => drawBoss(cos, xMeter, yMeter)
+        case road: RoadLocation => drawRoad(cos, road)
+        case _ =>
+      }
+      cos.restoreGraphicsState()
     }}
-
-    cos.restoreGraphicsState()
 
     cos.close()
     Right(pdf)

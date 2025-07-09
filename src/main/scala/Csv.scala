@@ -22,17 +22,28 @@ case class Location(
 
 object Location {
   enum Icon():
-    case Stones, Boss, Compass, Shack, Base, LineUp, LineDiag1, LineRight, LineDiag2
+    case Stones, Boss, Compass, Shack, Base, LineUp, LineDiag1, LineRight, LineDiag2, Road
 }
+
+// this can't be the right way to do this
+case class RoadLocation(
+  icon: Location.Icon,
+  description: String,
+  x1: Float,
+  y1: Float,
+  x2: Float,
+  y2: Float)
 
 case class Csv(
     properties: Properties,
-    locations: List[Location]
+    locations: List[Location | RoadLocation]
 ) {
-  lazy val minMetersX: Float = locations.reduce{ (l1,l2) => if (l1.xMeter < l2.xMeter) l1 else l2 }.xMeter
-  lazy val minMetersY: Float = locations.reduce{ (l1,l2) => if (l1.yMeter < l2.yMeter) l1 else l2 }.yMeter
-  lazy val maxMetersX: Float = locations.reduce{ (l1,l2) => if (l1.xMeter > l2.xMeter) l1 else l2 }.xMeter
-  lazy val maxMetersY: Float = locations.reduce{ (l1,l2) => if (l1.yMeter > l2.yMeter) l1 else l2 }.yMeter
+  // roads do not add to the bounds, their ends should also be other locations
+  private def onlyLocations: List[Location] = locations.flatMap{ e => if (e.isInstanceOf[Location]) List(e.asInstanceOf[Location]) else Nil }
+  lazy val minMetersX: Float = onlyLocations.reduce{ (l1,l2) => if (l1.xMeter < l2.xMeter) l1 else l2 }.xMeter
+  lazy val minMetersY: Float = onlyLocations.reduce{ (l1,l2) => if (l1.yMeter < l2.yMeter) l1 else l2 }.yMeter
+  lazy val maxMetersX: Float = onlyLocations.reduce{ (l1,l2) => if (l1.xMeter > l2.xMeter) l1 else l2 }.xMeter
+  lazy val maxMetersY: Float = onlyLocations.reduce{ (l1,l2) => if (l1.yMeter > l2.yMeter) l1 else l2 }.yMeter
   lazy val boundMetersX: Float = maxMetersX-minMetersX
   lazy val boundMetersY: Float = maxMetersY-minMetersY
 }
@@ -66,10 +77,10 @@ object Csv {
       }
     }
 
-    def mkError(lineNo: Int, msg: String): Either[String, List[Location]] = Left(s"$filename($lineNo): $msg")
+    def mkError(lineNo: Int, msg: String): Either[String, List[Location | RoadLocation]] = Left(s"$filename($lineNo): $msg")
 
     @tailrec
-    def processLocationLine(in: Seq[String], prevLineNo: Int, locations: List[Location]): Either[String, List[Location]] = {
+    def processLocationLine(in: Seq[String], prevLineNo: Int, locations: List[Location | RoadLocation]): Either[String, List[Location | RoadLocation]] = {
       if (in.isEmpty) Right(locations)
       else {
         val line = in.head
@@ -79,13 +90,26 @@ object Csv {
         else {
           // TODO: add some error processing for image
           a(2).toFloatOption match {
-            case None => mkError(lineNo, s"x meter value is not a double: ${a(1)}")
+            case None => mkError(lineNo, s"x meter value is not a double: ${a(2)}")
             case Some(xmeter) => {
               a(3).toFloatOption match {
-                case None => mkError(lineNo, s"y meter value is not a double: ${a(2)}")
+                case None => mkError(lineNo, s"y meter value is not a double: ${a(3)}")
                 case Some(ymeter) => {
                   val icon = Location.Icon.valueOf(a(0)) // TODO: need to error check
-                  processLocationLine(in.tail, lineNo, Location(icon, a(1), xmeter, ymeter) :: locations)
+                  if (icon == Location.Icon.Road) {
+                    a(4).toFloatOption match {
+                      case None => mkError(lineNo, s"x2 meter value is not a double: ${a(4)}")
+                      case Some(x2) => {
+                        a(5).toFloatOption match {
+                          case None => mkError(lineNo, s"y meter value is not a double: ${a(5)}")
+                          case Some(y2) => {
+                            processLocationLine(in.tail, lineNo, RoadLocation(icon, a(1), xmeter, ymeter, x2, y2) :: locations)
+                          }
+                        }
+                      }
+                    }
+                  } else 
+                    processLocationLine(in.tail, lineNo, Location(icon, a(1), xmeter, ymeter) :: locations)
                 }
               }
             }
