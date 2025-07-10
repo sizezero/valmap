@@ -7,7 +7,6 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle
 import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode
 import org.apache.pdfbox.util.Matrix
 
-import Location.Icon._
 import Properties.Orientation
 
 object ValMap {
@@ -97,24 +96,24 @@ object ValMap {
     cos.stroke()
   }
 
-  def drawLine(cos: PDPageContentStream, icon: Location.Icon, x: Float, y: Float): Unit = {
+  def drawLine(cos: PDPageContentStream, glyph: Glyph, x: Float, y: Float): Unit = {
     cos.setLineWidth(5)
     cos.setStrokingColor(Color.BLACK)
     val d = 15f
-    icon match {
-      case LineUp => {
+    glyph match {
+      case Glyph.LineUp => {
         cos.moveTo(x,y-d)
         cos.lineTo(x,y+d)
       }
-      case LineDiag1 => {
+      case Glyph.LineDiag1 => {
         cos.moveTo(x+d,y-d)
         cos.lineTo(x-d,y-d)
       }
-      case LineRight => {
+      case Glyph.LineRight => {
         cos.moveTo(x-d,y)
         cos.lineTo(x+d,y)
       }
-      case LineDiag2 => {
+      case Glyph.LineDiag2 => {
         cos.moveTo(x-d,y+d)
         cos.lineTo(x+d,y-d)
       }
@@ -210,7 +209,7 @@ object ValMap {
       m.translate(-csv.minMetersX+buffer, -csv.minMetersY+buffer)
       cos.transform(m)
     }
-    // I think now we can just use meters to draw
+    // all drawing primitives now use meters in the map coordinates
 
     // draw bounding box for the map
     if (csv.properties.bound) {
@@ -229,14 +228,14 @@ object ValMap {
     csv.locations.foreach{ (location) => {
       cos.saveGraphicsState()
       location match {
-        case Location(Compass, _, xMeter, yMeter) => drawCompass(cos, xMeter, yMeter)
-        case Location(Shack, _, xMeter, yMeter) => drawShack(cos, xMeter, yMeter)
-        case Location(Base, _, xMeter, yMeter) => drawBase(cos, xMeter, yMeter)
-        case Location(LineUp, _, xMeter, yMeter) => drawLine(cos, LineUp, xMeter, yMeter)
-        case Location(LineDiag1, _, xMeter, yMeter) => drawLine(cos, LineDiag1, xMeter, yMeter)
-        case Location(LineRight, _, xMeter, yMeter) => drawLine(cos, LineRight, xMeter, yMeter)
-        case Location(LineDiag2, _, xMeter, yMeter) => drawLine(cos, LineDiag2, xMeter, yMeter)
-        case Location(Boss, _, xMeter, yMeter) => drawBoss(cos, xMeter, yMeter)
+        case Location(Glyph.Compass, _, xMeter, yMeter) => drawCompass(cos, xMeter, yMeter)
+        case Location(Glyph.Shack, _, xMeter, yMeter) => drawShack(cos, xMeter, yMeter)
+        case Location(Glyph.Base, _, xMeter, yMeter) => drawBase(cos, xMeter, yMeter)
+        case Location(Glyph.LineUp, _, xMeter, yMeter) => drawLine(cos, Glyph.LineUp, xMeter, yMeter)
+        case Location(Glyph.LineDiag1, _, xMeter, yMeter) => drawLine(cos, Glyph.LineDiag1, xMeter, yMeter)
+        case Location(Glyph.LineRight, _, xMeter, yMeter) => drawLine(cos, Glyph.LineRight, xMeter, yMeter)
+        case Location(Glyph.LineDiag2, _, xMeter, yMeter) => drawLine(cos, Glyph.LineDiag2, xMeter, yMeter)
+        case Location(Glyph.Boss, _, xMeter, yMeter) => drawBoss(cos, xMeter, yMeter)
         case road: RoadLocation => drawRoad(cos, road)
         case _ =>
       }

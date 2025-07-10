@@ -13,21 +13,19 @@ object Properties {
     case Portrait, Landscape, Auto
 }
 
+enum Glyph():
+  case Stones, Boss, Compass, Shack, Base, LineUp, LineDiag1, LineRight, LineDiag2, Road
+
 case class Location(
-  icon: Location.Icon,
+  glyph: Glyph,
   description: String,
   xMeter: Float,
   yMeter: Float
 )
 
-object Location {
-  enum Icon():
-    case Stones, Boss, Compass, Shack, Base, LineUp, LineDiag1, LineRight, LineDiag2, Road
-}
-
 // this can't be the right way to do this
 case class RoadLocation(
-  icon: Location.Icon,
+  glyph: Glyph,
   description: String,
   x1: Float,
   y1: Float,
@@ -95,21 +93,21 @@ object Csv {
               a(3).toFloatOption match {
                 case None => mkError(lineNo, s"y meter value is not a double: ${a(3)}")
                 case Some(ymeter) => {
-                  val icon = Location.Icon.valueOf(a(0)) // TODO: need to error check
-                  if (icon == Location.Icon.Road) {
+                  val glyph = Glyph.valueOf(a(0)) // TODO: need to error check
+                  if (glyph == Glyph.Road) {
                     a(4).toFloatOption match {
                       case None => mkError(lineNo, s"x2 meter value is not a double: ${a(4)}")
                       case Some(x2) => {
                         a(5).toFloatOption match {
                           case None => mkError(lineNo, s"y meter value is not a double: ${a(5)}")
                           case Some(y2) => {
-                            processLocationLine(in.tail, lineNo, RoadLocation(icon, a(1), xmeter, ymeter, x2, y2) :: locations)
+                            processLocationLine(in.tail, lineNo, RoadLocation(glyph, a(1), xmeter, ymeter, x2, y2) :: locations)
                           }
                         }
                       }
                     }
                   } else 
-                    processLocationLine(in.tail, lineNo, Location(icon, a(1), xmeter, ymeter) :: locations)
+                    processLocationLine(in.tail, lineNo, Location(glyph, a(1), xmeter, ymeter) :: locations)
                 }
               }
             }
