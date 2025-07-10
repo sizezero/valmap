@@ -19,8 +19,8 @@ object ValMap {
 
     // vertical lines
     var i = 0
-    var x = csv.minMetersX.toInt + i*100
-    while (x < csv.maxMetersX) {
+    var x = csv.minX.toInt + i*100
+    while (x < csv.maxX) {
       if (i % 10 == 0) {
         cos.setLineWidth(lineWidth)
         cos.setStrokingColor(darkGray)
@@ -28,17 +28,17 @@ object ValMap {
         cos.setLineWidth(lineWidth)
         cos.setStrokingColor(lightGray)
       }
-      cos.moveTo(x, csv.minMetersY)
-      cos.lineTo(x, csv.maxMetersY)
+      cos.moveTo(x, csv.minY)
+      cos.lineTo(x, csv.maxY)
       cos.stroke()
       i = i + 1
-      x = csv.minMetersX.toInt + i*100
+      x = csv.minX.toInt + i*100
     }
 
     // horizontal lines
     i = 0
-    var y = csv.minMetersY.toInt + i*100
-    while (y < csv.maxMetersY) {
+    var y = csv.minY.toInt + i*100
+    while (y < csv.maxY) {
       if (i % 10 == 0) {
         cos.setLineWidth(lineWidth)
         cos.setStrokingColor(darkGray)
@@ -46,11 +46,11 @@ object ValMap {
         cos.setLineWidth(lineWidth)
         cos.setStrokingColor(lightGray)
       }
-      cos.moveTo(csv.minMetersX, y)
-      cos.lineTo(csv.maxMetersX, y)
+      cos.moveTo(csv.minX, y)
+      cos.lineTo(csv.maxX, y)
       cos.stroke()
       i = i + 1
-      y = csv.minMetersY.toInt + i*100
+      y = csv.minY.toInt + i*100
     }
   }
 
@@ -122,6 +122,7 @@ object ValMap {
     cos.stroke()
   }
 
+  // PDFs don't do circles so you have to use multiple elipses; this is magic code from the interwebs
   def drawCircle(cos: PDPageContentStream, x: Float, y: Float, r: Float): Unit = {
     val k: Float = 0.552284749831f
     cos.moveTo(x - r, y)
@@ -176,7 +177,7 @@ object ValMap {
         val portraitBound = page.getMediaBox()
         val portraitRatio = portraitBound.getWidth() / portraitBound.getHeight()
         val landscapeRatio = 1f / portraitRatio
-        val mapRatio = csv.boundMetersX / csv.boundMetersY
+        val mapRatio = csv.boundX / csv.boundY
         if (Math.abs(mapRatio-portraitRatio) < Math.abs(mapRatio-landscapeRatio)) {
           (page.getMediaBox(), new Matrix())
         } else {
@@ -199,14 +200,14 @@ object ValMap {
     {
       val scale: Float = {
         val pageRatio = bound.getWidth() / bound.getHeight()
-        val mapRatio = csv.boundMetersX / csv.boundMetersY
+        val mapRatio = csv.boundX / csv.boundY
         if (mapRatio > pageRatio)
-          bound.getWidth() / (csv.boundMetersX+2*buffer) // scale the width of the map to the page
+          bound.getWidth() / (csv.boundX+2*buffer) // scale the width of the map to the page
         else
-          bound.getHeight() / (csv.boundMetersY+2*buffer) // scale the height of the map to the page
+          bound.getHeight() / (csv.boundY+2*buffer) // scale the height of the map to the page
       }
       m.scale(scale, scale)
-      m.translate(-csv.minMetersX+buffer, -csv.minMetersY+buffer)
+      m.translate(-csv.minX+buffer, -csv.minY+buffer)
       cos.transform(m)
     }
     // all drawing primitives now use meters in the map coordinates
@@ -216,7 +217,7 @@ object ValMap {
       cos.saveGraphicsState()
       cos.setLineWidth(10)
       cos.setStrokingColor(Color.CYAN)
-      cos.addRect(csv.minMetersX, csv.minMetersY, csv.maxMetersX-csv.minMetersX, csv.maxMetersY-csv.minMetersY)
+      cos.addRect(csv.minX, csv.minY, csv.maxX-csv.minX, csv.maxY-csv.minY)
       cos.stroke()
       cos.restoreGraphicsState()
     }

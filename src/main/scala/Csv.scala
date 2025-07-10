@@ -2,6 +2,8 @@ import scala.annotation.tailrec
 
 // we use Float values instead of Doubles since the PDFBox library uses floats.
 
+// all x and y values are meters with x increasing the the right and y increasing upwards
+
 case class Properties(
   title: Option[String] = None,
   orientation: Properties.Orientation = Properties.Orientation.Auto,
@@ -19,8 +21,8 @@ enum Glyph():
 case class Location(
   glyph: Glyph,
   description: String,
-  xMeter: Float,
-  yMeter: Float
+  x: Float,
+  y: Float
 )
 
 // this can't be the right way to do this
@@ -38,12 +40,12 @@ case class Csv(
 ) {
   // roads do not add to the bounds, their ends should also be other locations
   private def onlyLocations: List[Location] = locations.flatMap{ e => if (e.isInstanceOf[Location]) List(e.asInstanceOf[Location]) else Nil }
-  lazy val minMetersX: Float = onlyLocations.reduce{ (l1,l2) => if (l1.xMeter < l2.xMeter) l1 else l2 }.xMeter
-  lazy val minMetersY: Float = onlyLocations.reduce{ (l1,l2) => if (l1.yMeter < l2.yMeter) l1 else l2 }.yMeter
-  lazy val maxMetersX: Float = onlyLocations.reduce{ (l1,l2) => if (l1.xMeter > l2.xMeter) l1 else l2 }.xMeter
-  lazy val maxMetersY: Float = onlyLocations.reduce{ (l1,l2) => if (l1.yMeter > l2.yMeter) l1 else l2 }.yMeter
-  lazy val boundMetersX: Float = maxMetersX-minMetersX
-  lazy val boundMetersY: Float = maxMetersY-minMetersY
+  lazy val minX: Float = onlyLocations.reduce{ (l1,l2) => if (l1.x < l2.x) l1 else l2 }.x
+  lazy val minY: Float = onlyLocations.reduce{ (l1,l2) => if (l1.y < l2.y) l1 else l2 }.y
+  lazy val maxX: Float = onlyLocations.reduce{ (l1,l2) => if (l1.x > l2.x) l1 else l2 }.x
+  lazy val maxY: Float = onlyLocations.reduce{ (l1,l2) => if (l1.y > l2.y) l1 else l2 }.y
+  lazy val boundX: Float = maxX-minX
+  lazy val boundY: Float = maxY-minY
 }
 
 object Csv {
