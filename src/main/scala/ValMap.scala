@@ -55,7 +55,6 @@ object ValMap {
   }
 
   def drawCompass(cos: PDPageContentStream, x: Float, y: Float): Unit = {
-    // TODO: may want to save state. I'm not sure if they can stack.
     cos.setLineWidth(5)
     cos.setStrokingColor(Color.BLACK)
     val d = 7f
@@ -68,7 +67,6 @@ object ValMap {
   }
 
   def drawShack(cos: PDPageContentStream, x: Float, y: Float): Unit = {
-    // TODO: may want to save state. I'm not sure if they can stack.
     cos.setLineWidth(5)
     cos.setStrokingColor(Color.BLACK)
     val d = 7f
@@ -80,7 +78,6 @@ object ValMap {
   }
 
   def drawBase(cos: PDPageContentStream, x: Float, y: Float): Unit = {
-    // TODO: may want to save state. I'm not sure if they can stack.
     cos.setLineWidth(5)
     cos.setStrokingColor(Color.BLACK)
     val d = 7f
@@ -161,14 +158,13 @@ object ValMap {
 
     // start by creating bounds values that allow us to convert from meters to page units
     // figure out whether we're portrait or landscape
-    val (bound, m: Matrix) = csv.properties.orientation match {
+    val (bound: PDRectangle, m: Matrix) = csv.properties.orientation match {
       case Orientation.Portrait => {
         // this is the default so I guess we don't do anything
         (page.getMediaBox(), new Matrix())
       }
       case Orientation.Landscape => {
         page.setRotation(90)
-        //val pageWidth: Float = pageSize.getWidth()
         val portraitBound = page.getMediaBox()
         val landscapeBound = PDRectangle(portraitBound.getHeight(), portraitBound.getWidth())
         (landscapeBound, new Matrix(0, 1, -1, 0, portraitBound.getWidth(), 0))
@@ -182,7 +178,6 @@ object ValMap {
           (page.getMediaBox(), new Matrix())
         } else {
           page.setRotation(90)
-          //val pageWidth: Float = pageSize.getWidth()
           val portraitBound = page.getMediaBox()
           val landscapeBound = PDRectangle(portraitBound.getHeight(), portraitBound.getWidth())
           (landscapeBound, new Matrix(0, 1, -1, 0, portraitBound.getWidth(), 0))
@@ -229,16 +224,16 @@ object ValMap {
     csv.locations.foreach{ (location) => {
       cos.saveGraphicsState()
       location match {
-        case Location(Glyph.Compass, _, xMeter, yMeter) => drawCompass(cos, xMeter, yMeter)
-        case Location(Glyph.Shack, _, xMeter, yMeter) => drawShack(cos, xMeter, yMeter)
-        case Location(Glyph.Base, _, xMeter, yMeter) => drawBase(cos, xMeter, yMeter)
-        case Location(Glyph.LineUp, _, xMeter, yMeter) => drawLine(cos, Glyph.LineUp, xMeter, yMeter)
-        case Location(Glyph.LineDiag1, _, xMeter, yMeter) => drawLine(cos, Glyph.LineDiag1, xMeter, yMeter)
-        case Location(Glyph.LineRight, _, xMeter, yMeter) => drawLine(cos, Glyph.LineRight, xMeter, yMeter)
-        case Location(Glyph.LineDiag2, _, xMeter, yMeter) => drawLine(cos, Glyph.LineDiag2, xMeter, yMeter)
-        case Location(Glyph.Boss, _, xMeter, yMeter) => drawBoss(cos, xMeter, yMeter)
-        case road: RoadLocation => drawRoad(cos, road)
-        case _ =>
+        case Location(Glyph.Stones,    _, x, y) => // TODO
+        case Location(Glyph.Compass,   _, x, y) => drawCompass(cos, x, y)
+        case Location(Glyph.Shack,     _, x, y) => drawShack(cos, x, y)
+        case Location(Glyph.Base,      _, x, y) => drawBase(cos, x, y)
+        case Location(Glyph.LineUp,    _, x, y) => drawLine(cos, Glyph.LineUp, x, y)
+        case Location(Glyph.LineDiag1, _, x, y) => drawLine(cos, Glyph.LineDiag1, x, y)
+        case Location(Glyph.LineRight, _, x, y) => drawLine(cos, Glyph.LineRight, x, y)
+        case Location(Glyph.LineDiag2, _, x, y) => drawLine(cos, Glyph.LineDiag2, x, y)
+        case Location(Glyph.Boss,      _, x, y) => drawBoss(cos, x, y)
+        case road: RoadLocation                 => drawRoad(cos, road)
       }
       cos.restoreGraphicsState()
     }}
