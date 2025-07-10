@@ -8,6 +8,7 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream.AppendMode
 import org.apache.pdfbox.util.Matrix
 
 import Location.Icon._
+import Properties.Orientation
 
 object ValMap {
 
@@ -111,15 +112,49 @@ object ValMap {
   }
 
   def create(csv: Csv): Either[String, PDDocument] = {
-    val pdf = new PDDocument()
     val page = new PDPage(PDRectangle.LETTER)
-    pdf.addPage(page)
-    val cos = new PDPageContentStream(pdf, page)
 
     // start by creating bounds values that allow us to convert from meters to page units
     val buffer = 50f // buffer on top bottom, left and right
-    val bound = page.getMediaBox()
-    val m = new Matrix()
+    //val bound = page.getMediaBox()
+
+    //val m = new Matrix()
+
+    // figure out whether we're portrait or landscape
+    val (bound, m: Matrix) = csv.properties.orientation match {
+      case Orientation.Portrait => {
+        // this is the default so I guess we don't do anything
+        (page.getMediaBox(), new Matrix())
+      }
+      case Orientation.Landscape => {
+        page.setRotation(90)
+        //val pageWidth: Float = pageSize.getWidth()
+        val portraitBound = page.getMediaBox()
+        val landscapeBound = PDRectangle(portraitBound.getHeight(), portraitBound.getWidth())
+        (landscapeBound, new Matrix(0, 1, -1, 0, portraitBound.getWidth(), 0))
+      }
+      case Orientation.Auto => {
+        val portraitBound = page.getMediaBox()
+        val portraitRatio = portraitBound.getWidth() / portraitBound.getHeight()
+        val landscapeRatio = 1f / portraitRatio
+        val mapRatio = csv.boundMetersX / csv.boundMetersY
+        if (Math.abs(mapRatio-portraitRatio) < Math.abs(mapRatio-landscapeRatio)) {
+          (page.getMediaBox(), new Matrix())
+        } else {
+          page.setRotation(90)
+          //val pageWidth: Float = pageSize.getWidth()
+          val portraitBound = page.getMediaBox()
+          val landscapeBound = PDRectangle(portraitBound.getHeight(), portraitBound.getWidth())
+          (landscapeBound, new Matrix(0, 1, -1, 0, portraitBound.getWidth(), 0))
+        }
+      }
+    }
+
+    // set up the document with the single page
+    val pdf = new PDDocument()
+    pdf.addPage(page)
+    val cos = new PDPageContentStream(pdf, page)
+
     // for now scale the map width to the width of the page
     val scale: Float = bound.getWidth() / (csv.boundMetersX+2*buffer)
     m.scale(scale, scale)
@@ -131,7 +166,7 @@ object ValMap {
     if (csv.properties.bound) {
       cos.saveGraphicsState();
       cos.setLineWidth(10)
-      cos.setStrokingColor(Color.GRAY)
+      cos.setStrokingColor(Color.CYAN)
       cos.addRect(csv.minMetersX, csv.minMetersY, csv.maxMetersX-csv.minMetersX, csv.maxMetersY-csv.minMetersY)
       cos.stroke()
       cos.restoreGraphicsState()
