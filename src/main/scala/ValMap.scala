@@ -142,6 +142,19 @@ object ValMap {
     cos.stroke()
   }
 
+  def drawStones(cos: PDPageContentStream, x: Float, y: Float): Unit = {
+    val r = 5
+    val d = 8
+    cos.setLineWidth(1)
+    cos.setStrokingColor(Color.BLACK)
+    cos.setNonStrokingColor(Color.BLACK)
+    drawCircle(cos, x, y+d, r)
+    drawCircle(cos, x, y-d, r)
+    drawCircle(cos, x+d, y, r)
+    drawCircle(cos, x-d, y, r)
+    cos.stroke()
+  }
+
   def drawRoad(cos: PDPageContentStream, road: RoadLocation): Unit = {
     cos.setLineWidth(3)
     cos.setLineDashPattern(Array(3f), 0)
@@ -224,7 +237,7 @@ object ValMap {
     csv.locations.foreach{ (location) => {
       cos.saveGraphicsState()
       location match {
-        case Location(Glyph.Stones,    _, x, y) => // TODO
+        case Location(Glyph.Stones,    _, x, y) => drawStones(cos, x, y)
         case Location(Glyph.Compass,   _, x, y) => drawCompass(cos, x, y)
         case Location(Glyph.Shack,     _, x, y) => drawShack(cos, x, y)
         case Location(Glyph.Base,      _, x, y) => drawBase(cos, x, y)
