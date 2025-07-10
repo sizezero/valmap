@@ -247,6 +247,7 @@ object ValMap {
         case Location(Glyph.LineDiag2, _, x, y) => drawLine(cos, Glyph.LineDiag2, x, y)
         case Location(Glyph.Boss,      _, x, y) => drawBoss(cos, x, y)
         case road: RoadLocation                 => drawRoad(cos, road)
+        case Location(Glyph.Road, _, _, _)      => throw new RuntimeException("Locations should never be Glyph.Road")
       }
       cos.restoreGraphicsState()
     }}
