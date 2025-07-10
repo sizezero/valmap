@@ -12,6 +12,49 @@ import Properties.Orientation
 
 object ValMap {
 
+  def drawGridlines(cos: PDPageContentStream, csv: Csv) = {
+    // try light grey every hundred meters, darker one every kilometer
+    val lightGray = Color(240,240,240)
+    val darkGray = Color(200,200,200)
+    val lineWidth = 2
+
+    // vertical lines
+    var i = 0
+    var x = csv.minMetersX.toInt + i*100
+    while (x < csv.maxMetersX) {
+      if (i % 10 == 0) {
+        cos.setLineWidth(lineWidth)
+        cos.setStrokingColor(darkGray)
+      } else {
+        cos.setLineWidth(lineWidth)
+        cos.setStrokingColor(lightGray)
+      }
+      cos.moveTo(x, csv.minMetersY)
+      cos.lineTo(x, csv.maxMetersY)
+      cos.stroke()
+      i = i + 1
+      x = csv.minMetersX.toInt + i*100
+    }
+
+    // horizontal lines
+    i = 0
+    var y = csv.minMetersY.toInt + i*100
+    while (y < csv.maxMetersY) {
+      if (i % 10 == 0) {
+        cos.setLineWidth(lineWidth)
+        cos.setStrokingColor(darkGray)
+      } else {
+        cos.setLineWidth(lineWidth)
+        cos.setStrokingColor(lightGray)
+      }
+      cos.moveTo(csv.minMetersX, y)
+      cos.lineTo(csv.maxMetersX, y)
+      cos.stroke()
+      i = i + 1
+      y = csv.minMetersY.toInt + i*100
+    }
+  }
+
   def drawCompass(cos: PDPageContentStream, x: Float, y: Float): Unit = {
     // TODO: may want to save state. I'm not sure if they can stack.
     cos.setLineWidth(5)
@@ -164,13 +207,16 @@ object ValMap {
 
     // draw bounding box for the map
     if (csv.properties.bound) {
-      cos.saveGraphicsState();
+      cos.saveGraphicsState()
       cos.setLineWidth(10)
       cos.setStrokingColor(Color.CYAN)
       cos.addRect(csv.minMetersX, csv.minMetersY, csv.maxMetersX-csv.minMetersX, csv.maxMetersY-csv.minMetersY)
       cos.stroke()
       cos.restoreGraphicsState()
     }
+
+    // draw gridlines
+    drawGridlines(cos, csv)
 
     // draw simple cross compasses
     csv.locations.foreach{ (location) => {
