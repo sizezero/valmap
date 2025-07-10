@@ -40,7 +40,7 @@ case class Csv(
 ) {
 
   // dump all coordinates in a list (Locations have one coordinate, Roads have two coordinates)
-  private lazy val onlyCoordinates: List[(Float, Float)] = {
+  private val onlyCoordinates: List[(Float, Float)] = {
     locations.flatMap{ e =>
       if (e.isInstanceOf[Location]) {
         val loc = e.asInstanceOf[Location]
@@ -52,12 +52,12 @@ case class Csv(
     }
   }
 
-  lazy val minX: Float = onlyCoordinates.reduce{ (c1,c2) => if (c1._1 < c2._1) c1 else c2 }._1
-  lazy val minY: Float = onlyCoordinates.reduce{ (c1,c2) => if (c1._2 < c2._2) c1 else c2 }._2
-  lazy val maxX: Float = onlyCoordinates.reduce{ (c1,c2) => if (c1._1 > c2._1) c1 else c2 }._1
-  lazy val maxY: Float = onlyCoordinates.reduce{ (c1,c2) => if (c1._2 > c2._2) c1 else c2 }._2
-  lazy val boundX: Float = maxX-minX
-  lazy val boundY: Float = maxY-minY
+  val minX: Float = onlyCoordinates.reduce{ (c1,c2) => if (c1._1 < c2._1) c1 else c2 }._1
+  val minY: Float = onlyCoordinates.reduce{ (c1,c2) => if (c1._2 < c2._2) c1 else c2 }._2
+  val maxX: Float = onlyCoordinates.reduce{ (c1,c2) => if (c1._1 > c2._1) c1 else c2 }._1
+  val maxY: Float = onlyCoordinates.reduce{ (c1,c2) => if (c1._2 > c2._2) c1 else c2 }._2
+  val boundX: Float = maxX-minX
+  val boundY: Float = maxY-minY
 }
 
 object Csv {
