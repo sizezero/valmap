@@ -157,12 +157,9 @@ object ValMap {
   def create(csv: Csv): Either[String, PDDocument] = {
     val page = new PDPage(PDRectangle.LETTER)
 
-    // start by creating bounds values that allow us to convert from meters to page units
     val buffer = 50f // buffer on top bottom, left and right
-    //val bound = page.getMediaBox()
 
-    //val m = new Matrix()
-
+    // start by creating bounds values that allow us to convert from meters to page units
     // figure out whether we're portrait or landscape
     val (bound, m: Matrix) = csv.properties.orientation match {
       case Orientation.Portrait => {
@@ -198,11 +195,21 @@ object ValMap {
     pdf.addPage(page)
     val cos = new PDPageContentStream(pdf, page)
 
+    // TODO: need to choose whether to match width or height
     // for now scale the map width to the width of the page
-    val scale: Float = bound.getWidth() / (csv.boundMetersX+2*buffer)
-    m.scale(scale, scale)
-    m.translate(-csv.minMetersX+buffer, -csv.minMetersY+buffer)
-    cos.transform(m)
+    {
+      val scale: Float = {
+        val pageRatio = bound.getWidth() / bound.getHeight()
+        val mapRatio = csv.boundMetersX / csv.boundMetersY
+        if (mapRatio > pageRatio)
+          bound.getWidth() / (csv.boundMetersX+2*buffer) // scale the width of the map to the page
+        else
+          bound.getHeight() / (csv.boundMetersY+2*buffer) // scale the height of the map to the page
+      }
+      m.scale(scale, scale)
+      m.translate(-csv.minMetersX+buffer, -csv.minMetersY+buffer)
+      cos.transform(m)
+    }
     // I think now we can just use meters to draw
 
     // draw bounding box for the map
