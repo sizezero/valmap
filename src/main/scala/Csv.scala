@@ -38,12 +38,24 @@ case class Csv(
     properties: Properties,
     locations: List[Location | RoadLocation]
 ) {
-  // roads do not add to the bounds, their ends should also be other locations
-  private def onlyLocations: List[Location] = locations.flatMap{ e => if (e.isInstanceOf[Location]) List(e.asInstanceOf[Location]) else Nil }
-  lazy val minX: Float = onlyLocations.reduce{ (l1,l2) => if (l1.x < l2.x) l1 else l2 }.x
-  lazy val minY: Float = onlyLocations.reduce{ (l1,l2) => if (l1.y < l2.y) l1 else l2 }.y
-  lazy val maxX: Float = onlyLocations.reduce{ (l1,l2) => if (l1.x > l2.x) l1 else l2 }.x
-  lazy val maxY: Float = onlyLocations.reduce{ (l1,l2) => if (l1.y > l2.y) l1 else l2 }.y
+
+  // dump all coordinates in a list (Locations have one coordinate, Roads have two coordinates)
+  private lazy val onlyCoordinates: List[(Float, Float)] = {
+    locations.flatMap{ e =>
+      if (e.isInstanceOf[Location]) {
+        val loc = e.asInstanceOf[Location]
+        List((loc.x, loc.y))
+      } else {
+        val road = e.asInstanceOf[RoadLocation]
+        List((road.x1, road.y1), (road.x2, road.y2))
+      }
+    }
+  }
+
+  lazy val minX: Float = onlyCoordinates.reduce{ (c1,c2) => if (c1._1 < c2._1) c1 else c2 }._1
+  lazy val minY: Float = onlyCoordinates.reduce{ (c1,c2) => if (c1._2 < c2._2) c1 else c2 }._2
+  lazy val maxX: Float = onlyCoordinates.reduce{ (c1,c2) => if (c1._1 > c2._1) c1 else c2 }._1
+  lazy val maxY: Float = onlyCoordinates.reduce{ (c1,c2) => if (c1._2 > c2._2) c1 else c2 }._2
   lazy val boundX: Float = maxX-minX
   lazy val boundY: Float = maxY-minY
 }
