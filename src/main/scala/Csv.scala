@@ -113,7 +113,7 @@ object Csv {
                       case None => mkError(lineNo, s"x2 meter value is not a double: ${a(4)}")
                       case Some(x2) => {
                         a(5).toFloatOption match {
-                          case None => mkError(lineNo, s"y meter value is not a double: ${a(5)}")
+                          case None => mkError(lineNo, s"y2 meter value is not a double: ${a(5)}")
                           case Some(y2) => {
                             processLocationLine(in.tail, lineNo, RoadLocation(glyph, a(1), xmeter, ymeter, x2, y2) :: locations)
                           }
