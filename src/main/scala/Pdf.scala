@@ -9,9 +9,9 @@ import org.apache.pdfbox.util.Matrix
 
 import Properties.Orientation
 
-object ValMap {
+object Pdf {
 
-  def drawGridlines(cos: PDPageContentStream, csv: Csv) = {
+  private def drawGridlines(cos: PDPageContentStream, csv: Csv) = {
     // try light grey every hundred meters, darker one every kilometer
     val lightGray = Color(240,240,240)
     val darkGray = Color(200,200,200)
@@ -54,7 +54,7 @@ object ValMap {
     }
   }
 
-  def drawCompass(cos: PDPageContentStream, x: Float, y: Float): Unit = {
+  private def drawCompass(cos: PDPageContentStream, x: Float, y: Float): Unit = {
     cos.setLineWidth(5)
     cos.setStrokingColor(Color.BLACK)
     val d = 7f
@@ -66,7 +66,7 @@ object ValMap {
     cos.stroke()
   }
 
-  def drawShack(cos: PDPageContentStream, x: Float, y: Float): Unit = {
+  private def drawShack(cos: PDPageContentStream, x: Float, y: Float): Unit = {
     cos.setLineWidth(5)
     cos.setStrokingColor(Color.BLACK)
     val d = 7f
@@ -77,7 +77,7 @@ object ValMap {
     cos.stroke()
   }
 
-  def drawBase(cos: PDPageContentStream, x: Float, y: Float): Unit = {
+  private def drawBase(cos: PDPageContentStream, x: Float, y: Float): Unit = {
     cos.setLineWidth(5)
     cos.setStrokingColor(Color.BLACK)
     val d = 7f
@@ -93,7 +93,7 @@ object ValMap {
     cos.stroke()
   }
 
-  def drawLine(cos: PDPageContentStream, glyph: Glyph, x: Float, y: Float): Unit = {
+  private def drawLine(cos: PDPageContentStream, glyph: Glyph, x: Float, y: Float): Unit = {
     cos.setLineWidth(5)
     cos.setStrokingColor(Color.BLACK)
     val d = 15f
@@ -120,7 +120,7 @@ object ValMap {
   }
 
   // PDFs don't do circles so you have to use multiple elipses; this is magic code from the interwebs
-  def drawCircle(cos: PDPageContentStream, x: Float, y: Float, r: Float): Unit = {
+  private def drawCircle(cos: PDPageContentStream, x: Float, y: Float, r: Float): Unit = {
     val k: Float = 0.552284749831f
     cos.moveTo(x - r, y)
     cos.curveTo(x - r, y + k * r, x - k * r, y + r, x, y + r)
@@ -130,7 +130,7 @@ object ValMap {
     cos.fill()
   }
 
-  def drawBoss(cos: PDPageContentStream, x: Float, y: Float): Unit = {
+  private def drawBoss(cos: PDPageContentStream, x: Float, y: Float): Unit = {
     cos.setLineWidth(5)
     cos.setStrokingColor(Color.BLACK)
     cos.setNonStrokingColor(Color.BLACK)
@@ -142,7 +142,7 @@ object ValMap {
     cos.stroke()
   }
 
-  def drawStones(cos: PDPageContentStream, x: Float, y: Float): Unit = {
+  private def drawStones(cos: PDPageContentStream, x: Float, y: Float): Unit = {
     val r = 5
     val d = 8
     cos.setLineWidth(1)
@@ -155,7 +155,7 @@ object ValMap {
     cos.stroke()
   }
 
-  def drawRoad(cos: PDPageContentStream, road: RoadLocation): Unit = {
+  private def drawRoad(cos: PDPageContentStream, road: RoadLocation): Unit = {
     cos.setLineWidth(3)
     cos.setLineDashPattern(Array(3f), 0)
     cos.setStrokingColor(Color.BLACK)

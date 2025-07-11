@@ -8,10 +8,10 @@
 @main def main(args: String*): Unit = {
 
   if (false) {
-    val pdf = PdfBoxExamples.create()
+    val doc = PdfBoxExamples.create()
     val outfile = os.pwd / "valmap-output.pdf"
-    pdf.save(outfile.toString)
-    pdf.close()
+    doc.save(outfile.toString)
+    doc.close()
   } else if (args.isEmpty) {
     println("valmap <csvfile>")
     sys.exit(1)
@@ -19,11 +19,11 @@
     val file: os.Path = os.Path(args.head, os.pwd)
     Csv.parse(file.toString, os.read.lines.stream(file)) match {
       case Right(csv) => {
-        ValMap.create(csv) match {
-          case Right(pdf) => {
+        Pdf.create(csv) match {
+          case Right(doc) => {
             val outfile = os.pwd / "valmap-output.pdf"
-            pdf.save(outfile.toString)
-            pdf.close()
+            doc.save(outfile.toString)
+            doc.close()
           }
           case Left(error) => {
             println(error)
