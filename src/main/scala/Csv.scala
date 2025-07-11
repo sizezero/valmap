@@ -76,10 +76,10 @@ object Csv {
           if (a.length != 6) Left(s"line does not have six elements: $line")
           else {
             a(0) match {
-              case "Title" => processPropertyLine(in.tail, lineNo, p.copy(title = Some(a(1))))
-              case "Orientation" => processPropertyLine(in.tail, lineNo, p.copy(orientation = Properties.Orientation.valueOf(a(1))))
-              case "Bound" => if (a(1)=="yes") processPropertyLine(in.tail, lineNo, p.copy(bound = true))
-                else if (a(1)=="no") processPropertyLine(in.tail, lineNo, p.copy(bound = false))
+              case "Title" =>                           processPropertyLine(in.tail, lineNo, p.copy(title = Some(a(1))))
+              case "Orientation" =>                     processPropertyLine(in.tail, lineNo, p.copy(orientation = Properties.Orientation.valueOf(a(1))))
+              case "Bound" => if (a(1)=="yes")          processPropertyLine(in.tail, lineNo, p.copy(bound = true))
+                else if (a(1)=="no")                    processPropertyLine(in.tail, lineNo, p.copy(bound = false))
                 else Left(s"($lineNo): Bound must be true or false")
               case s if (s=="" || s.startsWith("#")) => processPropertyLine(in.tail, lineNo, p)
               case _ => Left(s"($lineNo): unrecognized property name: ${a(0)}")
@@ -103,10 +103,10 @@ object Csv {
           // TODO: add some error processing for image
           a(2).toFloatOption match {
             case None => mkError(lineNo, s"x meter value is not a double: ${a(2)}")
-            case Some(xmeter) => {
+            case Some(x) => {
               a(3).toFloatOption match {
                 case None => mkError(lineNo, s"y meter value is not a double: ${a(3)}")
-                case Some(ymeter) => {
+                case Some(y) => {
                   val glyph = Glyph.valueOf(a(0)) // TODO: need to error check
                   if (glyph == Glyph.Road) {
                     a(4).toFloatOption match {
@@ -115,13 +115,13 @@ object Csv {
                         a(5).toFloatOption match {
                           case None => mkError(lineNo, s"y2 meter value is not a double: ${a(5)}")
                           case Some(y2) => {
-                            processLocationLine(in.tail, lineNo, RoadLocation(glyph, a(1), xmeter, ymeter, x2, y2) :: locations)
+                            processLocationLine(in.tail, lineNo, RoadLocation(glyph, a(1), x, y, x2, y2) :: locations)
                           }
                         }
                       }
                     }
                   } else 
-                    processLocationLine(in.tail, lineNo, Location(glyph, a(1), xmeter, ymeter) :: locations)
+                    processLocationLine(in.tail, lineNo, Location(glyph, a(1), x, y) :: locations)
                 }
               }
             }
