@@ -80,7 +80,7 @@ object Csv {
               case "Orientation" =>                     processPropertyLine(in.tail, lineNo, p.copy(orientation = Properties.Orientation.valueOf(a(1))))
               case "Bound" => if (a(1)=="yes")          processPropertyLine(in.tail, lineNo, p.copy(bound = true))
                 else if (a(1)=="no")                    processPropertyLine(in.tail, lineNo, p.copy(bound = false))
-                else Left(s"($lineNo): Bound must be true or false")
+                else Left(s"($lineNo): Bound must be yes or no")
               case s if (s=="" || s.startsWith("#")) => processPropertyLine(in.tail, lineNo, p)
               case _ => Left(s"($lineNo): unrecognized property name: ${a(0)}")
             }
