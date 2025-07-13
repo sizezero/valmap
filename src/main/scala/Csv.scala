@@ -16,7 +16,7 @@ object Properties {
 }
 
 enum Glyph():
-  case Stones, Boss, Compass, Shack, Base, LineUp, LineDiag1, LineRight, LineDiag2, Road
+  case Stones, Boss, Compass, Shack, Base, LineUp, LineDiag1, LineRight, LineDiag2, Road, Circle
 
 case class Location(
   glyph: Glyph,

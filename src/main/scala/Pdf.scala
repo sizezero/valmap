@@ -120,14 +120,13 @@ object Pdf {
   }
 
   // PDFs don't do circles so you have to use multiple elipses; this is magic code from the interwebs
-  private def drawCircle(cos: PDPageContentStream, x: Float, y: Float, r: Float): Unit = {
+  private def pathCircle(cos: PDPageContentStream, x: Float, y: Float, r: Float): Unit = {
     val k: Float = 0.552284749831f
     cos.moveTo(x - r, y)
     cos.curveTo(x - r, y + k * r, x - k * r, y + r, x, y + r)
     cos.curveTo(x + k * r, y + r, x + r, y + k * r, x + r, y)
     cos.curveTo(x + r, y - k * r, x + k * r, y - r, x, y - r)
     cos.curveTo(x - k * r, y - r, x - r, y - k * r, x - r, y)
-    cos.fill()
   }
 
   private def drawBoss(cos: PDPageContentStream, x: Float, y: Float): Unit = {
@@ -135,7 +134,8 @@ object Pdf {
     cos.setStrokingColor(Color.BLACK)
     cos.setNonStrokingColor(Color.BLACK)
     val r = 7f
-    drawCircle(cos, x, y, r)
+    pathCircle(cos, x, y, r)
+    cos.fill()
     cos.moveTo(x-r*1.5f, y+r*1.5f)
     cos.lineTo(x, y)
     cos.lineTo(x+r*1.5f, y+r*1.5f)
@@ -148,10 +148,14 @@ object Pdf {
     cos.setLineWidth(1)
     cos.setStrokingColor(Color.BLACK)
     cos.setNonStrokingColor(Color.BLACK)
-    drawCircle(cos, x, y+d, r)
-    drawCircle(cos, x, y-d, r)
-    drawCircle(cos, x+d, y, r)
-    drawCircle(cos, x-d, y, r)
+    pathCircle(cos, x, y+d, r)
+    cos.fill()
+    pathCircle(cos, x, y-d, r)
+    cos.fill()
+    pathCircle(cos, x+d, y, r)
+    cos.fill()
+    pathCircle(cos, x-d, y, r)
+    cos.fill()
     cos.stroke()
   }
 
@@ -161,6 +165,14 @@ object Pdf {
     cos.setStrokingColor(Color.BLACK)
     cos.moveTo(road.x1, road.y1)
     cos.lineTo(road.x2, road.y2)
+    cos.stroke()
+  }
+
+  private def drawCircle(cos: PDPageContentStream, x: Float, y: Float): Unit = {
+    cos.setLineWidth(2)
+    cos.setStrokingColor(Color.BLACK)
+    val r = 10f
+    pathCircle(cos, x, y, r)
     cos.stroke()
   }
 
@@ -247,6 +259,7 @@ object Pdf {
         case Location(Glyph.LineDiag2, _, x, y) => drawLine(cos, Glyph.LineDiag2, x, y)
         case Location(Glyph.Boss,      _, x, y) => drawBoss(cos, x, y)
         case road: RoadLocation                 => drawRoad(cos, road)
+        case Location(Glyph.Circle,    _, x, y) => drawCircle(cos, x, y)
         case Location(Glyph.Road, _, _, _)      => throw new RuntimeException("Locations should never be Glyph.Road")
       }
       cos.restoreGraphicsState()
