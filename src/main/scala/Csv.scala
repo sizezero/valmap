@@ -74,16 +74,14 @@ object Csv {
         else {
           val a = line.split(",", 6) // line will never have more than six elements
           if (a.length != 6) Left(s"line does not have six elements: $line")
-          else {
-            a(0) match {
-              case "Title" =>                           processPropertyLine(in.tail, lineNo, p.copy(title = Some(a(1))))
-              case "Orientation" =>                     processPropertyLine(in.tail, lineNo, p.copy(orientation = Properties.Orientation.valueOf(a(1))))
-              case "Bound" => if (a(1)=="yes")          processPropertyLine(in.tail, lineNo, p.copy(bound = true))
-                else if (a(1)=="no")                    processPropertyLine(in.tail, lineNo, p.copy(bound = false))
-                else Left(s"($lineNo): Bound must be yes or no")
-              case s if (s=="" || s.startsWith("#")) => processPropertyLine(in.tail, lineNo, p)
-              case _ => Left(s"($lineNo): unrecognized property name: ${a(0)}")
-            }
+          else a(0) match {
+            case "Title" =>                           processPropertyLine(in.tail, lineNo, p.copy(title = Some(a(1))))
+            case "Orientation" =>                     processPropertyLine(in.tail, lineNo, p.copy(orientation = Properties.Orientation.valueOf(a(1))))
+            case "Bound" => if (a(1)=="yes")          processPropertyLine(in.tail, lineNo, p.copy(bound = true))
+              else          if (a(1)=="no")           processPropertyLine(in.tail, lineNo, p.copy(bound = false))
+              else                                    Left(s"($lineNo): Bound must be yes or no")
+            case s if (s=="" || s.startsWith("#")) => processPropertyLine(in.tail, lineNo, p)
+            case _ =>                                 Left(s"($lineNo): unrecognized property name: ${a(0)}")
           }
         }
       }
@@ -99,31 +97,19 @@ object Csv {
         val lineNo = prevLineNo + 1
         val a = line.split(",", 6) // line will never have more than six elements
         if (a.length != 6) Left(s"line does not have six elements: $line")
-        else {
-          // TODO: add some error processing for image
-          a(2).toFloatOption match {
-            case None => mkError(lineNo, s"x meter value is not a double: ${a(2)}")
-            case Some(x) => {
-              a(3).toFloatOption match {
-                case None => mkError(lineNo, s"y meter value is not a double: ${a(3)}")
-                case Some(y) => {
-                  val glyph = Glyph.valueOf(a(0)) // TODO: need to error check
-                  if (glyph == Glyph.Road) {
-                    a(4).toFloatOption match {
-                      case None => mkError(lineNo, s"x2 meter value is not a double: ${a(4)}")
-                      case Some(x2) => {
-                        a(5).toFloatOption match {
-                          case None => mkError(lineNo, s"y2 meter value is not a double: ${a(5)}")
-                          case Some(y2) => {
-                            processLocationLine(in.tail, lineNo, RoadLocation(glyph, a(1), x, y, x2, y2) :: locations)
-                          }
-                        }
-                      }
-                    }
-                  } else 
-                    processLocationLine(in.tail, lineNo, Location(glyph, a(1), x, y) :: locations)
+        else a(2).toFloatOption match {
+          case None => mkError(lineNo, s"x meter value is not a double: ${a(2)}")
+          case Some(x) => a(3).toFloatOption match {
+            case None => mkError(lineNo, s"y meter value is not a double: ${a(3)}")
+            case Some(y) => {
+              val glyph = Glyph.valueOf(a(0)) // TODO: need to error check
+              if (glyph == Glyph.Road) a(4).toFloatOption match {
+                case None => mkError(lineNo, s"x2 meter value is not a double: ${a(4)}")
+                case Some(x2) => a(5).toFloatOption match {
+                  case None => mkError(lineNo, s"y2 meter value is not a double: ${a(5)}")
+                  case Some(y2) => processLocationLine(in.tail, lineNo, RoadLocation(glyph, a(1), x, y, x2, y2) :: locations)
                 }
-              }
+              } else processLocationLine(in.tail, lineNo, Location(glyph, a(1), x, y) :: locations)
             }
           }
         }
