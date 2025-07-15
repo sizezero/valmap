@@ -243,7 +243,9 @@ object Pdf {
     }
 
     // draw gridlines
+    cos.saveGraphicsState()
     drawGridlines(cos, csv)
+    cos.restoreGraphicsState()
 
     // draw simple cross compasses
     csv.locations.foreach{ (location) => {
