@@ -21,32 +21,26 @@ object Pdf {
   private def transformCanvas(cos: PDPageContentStream, csv: Csv, page: PDPage): Unit = {
     val buffer = 50f // buffer on top bottom, left and right in meters
 
+    def setPortrait(): (PDRectangle, Matrix) = (page.getMediaBox(), new Matrix())
+
+    def setLandscape(): (PDRectangle, Matrix) = {
+      page.setRotation(90)
+      val portraitBound = page.getMediaBox()
+      val landscapeBound = PDRectangle(portraitBound.getHeight(), portraitBound.getWidth())
+      (landscapeBound, new Matrix(0, 1, -1, 0, portraitBound.getWidth(), 0))
+    }
+
     // determine our actual orientation if Auto is set
     // if we are in landscape mode, add 90d rotation to the transformation
     val (bound: PDRectangle, m: Matrix) = csv.properties.orientation match {
-      case Orientation.Portrait => {
-        // this is the default so I guess we don't do anything
-        (page.getMediaBox(), new Matrix())
-      }
-      case Orientation.Landscape => {
-        page.setRotation(90)
-        val portraitBound = page.getMediaBox()
-        val landscapeBound = PDRectangle(portraitBound.getHeight(), portraitBound.getWidth())
-        (landscapeBound, new Matrix(0, 1, -1, 0, portraitBound.getWidth(), 0))
-      }
+      case Orientation.Portrait  => setPortrait()
+      case Orientation.Landscape => setLandscape()
       case Orientation.Auto => {
-        val portraitBound = page.getMediaBox()
-        val portraitRatio = portraitBound.getWidth() / portraitBound.getHeight()
+        val portraitRatio = page.getMediaBox().getWidth() / page.getMediaBox().getHeight()
         val landscapeRatio = 1f / portraitRatio
         val mapRatio = csv.boundX / csv.boundY
-        if (Math.abs(mapRatio-portraitRatio) < Math.abs(mapRatio-landscapeRatio)) {
-          (page.getMediaBox(), new Matrix())
-        } else {
-          page.setRotation(90)
-          val portraitBound = page.getMediaBox()
-          val landscapeBound = PDRectangle(portraitBound.getHeight(), portraitBound.getWidth())
-          (landscapeBound, new Matrix(0, 1, -1, 0, portraitBound.getWidth(), 0))
-        }
+        if (Math.abs(mapRatio-portraitRatio) < Math.abs(mapRatio-landscapeRatio)) setPortrait()
+        else                                                                      setLandscape()
       }
     }
 
