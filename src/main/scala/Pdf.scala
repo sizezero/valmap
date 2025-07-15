@@ -235,8 +235,8 @@ object Pdf {
     // draw bounding box for the map
     if (csv.properties.bound) {
       cos.saveGraphicsState()
-      cos.setLineWidth(10)
-      cos.setStrokingColor(Color.CYAN)
+      cos.setLineWidth(7)
+      cos.setStrokingColor(Color.MAGENTA)
       cos.addRect(csv.minX, csv.minY, csv.maxX-csv.minX, csv.maxY-csv.minY)
       cos.stroke()
       cos.restoreGraphicsState()
