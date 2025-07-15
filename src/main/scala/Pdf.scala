@@ -11,6 +11,59 @@ import Properties.Orientation
 
 object Pdf {
 
+  // rotate the canvase based on orientation
+  // scale the canvas based on PDF to meters
+  // translate the canvas based on the new origin
+  // add an edge buffer
+  // output is side effects of arguments:
+  //   page may be rotated 90d
+  //   cos has a transformation matrix added
+  private def transformCanvas(cos: PDPageContentStream, csv: Csv, page: PDPage): Unit = {
+    val buffer = 50f // buffer on top bottom, left and right in meters
+
+    // determine our actual orientation if Auto is set
+    // if we are in landscape mode, add 90d rotation to the transformation
+    val (bound: PDRectangle, m: Matrix) = csv.properties.orientation match {
+      case Orientation.Portrait => {
+        // this is the default so I guess we don't do anything
+        (page.getMediaBox(), new Matrix())
+      }
+      case Orientation.Landscape => {
+        page.setRotation(90)
+        val portraitBound = page.getMediaBox()
+        val landscapeBound = PDRectangle(portraitBound.getHeight(), portraitBound.getWidth())
+        (landscapeBound, new Matrix(0, 1, -1, 0, portraitBound.getWidth(), 0))
+      }
+      case Orientation.Auto => {
+        val portraitBound = page.getMediaBox()
+        val portraitRatio = portraitBound.getWidth() / portraitBound.getHeight()
+        val landscapeRatio = 1f / portraitRatio
+        val mapRatio = csv.boundX / csv.boundY
+        if (Math.abs(mapRatio-portraitRatio) < Math.abs(mapRatio-landscapeRatio)) {
+          (page.getMediaBox(), new Matrix())
+        } else {
+          page.setRotation(90)
+          val portraitBound = page.getMediaBox()
+          val landscapeBound = PDRectangle(portraitBound.getHeight(), portraitBound.getWidth())
+          (landscapeBound, new Matrix(0, 1, -1, 0, portraitBound.getWidth(), 0))
+        }
+      }
+    }
+
+    // Set transformation to scale and translate to meter map coordinates
+    val scale: Float = {
+      val pageRatio = bound.getWidth() / bound.getHeight()
+      val mapRatio = csv.boundX / csv.boundY
+      if (mapRatio > pageRatio)
+        bound.getWidth() / (csv.boundX+2*buffer) // scale the width of the map to the page
+      else
+        bound.getHeight() / (csv.boundY+2*buffer) // scale the height of the map to the page
+    }
+    m.scale(scale, scale)
+    m.translate(-csv.minX+buffer, -csv.minY+buffer)
+    cos.transform(m)
+  }
+
   private def drawGridlines(cos: PDPageContentStream, csv: Csv) = {
     // try light grey every hundred meters, darker one every kilometer
     val lightGray = Color(240,240,240)
@@ -178,58 +231,11 @@ object Pdf {
 
   def create(csv: Csv): Either[String, PDDocument] = {
     val page = new PDPage(PDRectangle.LETTER)
-
-    val buffer = 50f // buffer on top bottom, left and right
-
-    // start by creating bounds values that allow us to convert from meters to page units
-    // figure out whether we're portrait or landscape
-    val (bound: PDRectangle, m: Matrix) = csv.properties.orientation match {
-      case Orientation.Portrait => {
-        // this is the default so I guess we don't do anything
-        (page.getMediaBox(), new Matrix())
-      }
-      case Orientation.Landscape => {
-        page.setRotation(90)
-        val portraitBound = page.getMediaBox()
-        val landscapeBound = PDRectangle(portraitBound.getHeight(), portraitBound.getWidth())
-        (landscapeBound, new Matrix(0, 1, -1, 0, portraitBound.getWidth(), 0))
-      }
-      case Orientation.Auto => {
-        val portraitBound = page.getMediaBox()
-        val portraitRatio = portraitBound.getWidth() / portraitBound.getHeight()
-        val landscapeRatio = 1f / portraitRatio
-        val mapRatio = csv.boundX / csv.boundY
-        if (Math.abs(mapRatio-portraitRatio) < Math.abs(mapRatio-landscapeRatio)) {
-          (page.getMediaBox(), new Matrix())
-        } else {
-          page.setRotation(90)
-          val portraitBound = page.getMediaBox()
-          val landscapeBound = PDRectangle(portraitBound.getHeight(), portraitBound.getWidth())
-          (landscapeBound, new Matrix(0, 1, -1, 0, portraitBound.getWidth(), 0))
-        }
-      }
-    }
-
-    // set up the document with the single page
     val pdf = new PDDocument()
     pdf.addPage(page)
     val cos = new PDPageContentStream(pdf, page)
 
-    // TODO: need to choose whether to match width or height
-    // for now scale the map width to the width of the page
-    {
-      val scale: Float = {
-        val pageRatio = bound.getWidth() / bound.getHeight()
-        val mapRatio = csv.boundX / csv.boundY
-        if (mapRatio > pageRatio)
-          bound.getWidth() / (csv.boundX+2*buffer) // scale the width of the map to the page
-        else
-          bound.getHeight() / (csv.boundY+2*buffer) // scale the height of the map to the page
-      }
-      m.scale(scale, scale)
-      m.translate(-csv.minX+buffer, -csv.minY+buffer)
-      cos.transform(m)
-    }
+    transformCanvas(cos, csv, page)
     // all drawing primitives now use meters in the map coordinates
 
     // draw bounding box for the map
