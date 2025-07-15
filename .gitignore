@@ -32,4 +32,4 @@ metals.sbt
 /.worksheet/
 
 # program output
-valmap-output.pdf
+out/*
