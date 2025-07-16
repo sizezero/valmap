@@ -70,10 +70,11 @@ object Pdf {
     cos.transform(m)
   }
 
+  private val lightGray = Color(240,240,240)
+  private val darkGray  = Color(200,200,200)
+
   private def drawGridlines(cos: PDPageContentStream, csv: Csv) = {
     // try light grey every hundred meters, darker one every kilometer
-    val lightGray = Color(240,240,240)
-    val darkGray = Color(200,200,200)
     val lineWidth = 2
 
     // vertical lines
@@ -229,7 +230,7 @@ object Pdf {
 
   private def drawCircle(cos: PDPageContentStream, x: Float, y: Float): Unit = {
     cos.setLineWidth(2)
-    cos.setStrokingColor(Color.BLACK)
+    cos.setStrokingColor(lightGray)
     val r = 10f
     pathCircle(cos, x, y, r)
     cos.stroke()
