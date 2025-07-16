@@ -11,7 +11,7 @@ import Properties.Orientation
 
 object Pdf {
 
-  // rotate the canvase based on orientation
+  // rotate the canvas based on orientation
   // scale the canvas based on PDF to meters
   // translate the canvas based on the new origin
   // add an edge buffer
@@ -23,15 +23,15 @@ object Pdf {
 
     def setPortrait(): (PDRectangle, Matrix) = (page.getMediaBox(), new Matrix())
 
+    // if we are in landscape mode, add 90d rotation to the transformation
     def setLandscape(): (PDRectangle, Matrix) = {
-      page.setRotation(90)
+      page.setRotation(90) // side effect of rotaing the canvas page
       val portraitBound = page.getMediaBox()
       val landscapeBound = PDRectangle(portraitBound.getHeight(), portraitBound.getWidth())
       (landscapeBound, new Matrix(0, 1, -1, 0, portraitBound.getWidth(), 0))
     }
 
     // determine our actual orientation if Auto is set
-    // if we are in landscape mode, add 90d rotation to the transformation
     val (bound: PDRectangle, m: Matrix) = csv.properties.orientation match {
       case Orientation.Portrait  => setPortrait()
       case Orientation.Landscape => setLandscape()
@@ -46,7 +46,7 @@ object Pdf {
 
     // Set transformation to scale and translate to meter map coordinates
     val scale: Float = {
-      val pageRatio = bound.getWidth() / bound.getHeight()
+      val pageRatio = bound.getWidth() / bound.getHeight() // the ratio of either the chosen portrait or landscape
       val mapRatio = csv.boundX / csv.boundY
       if (mapRatio > pageRatio)
         bound.getWidth() / (csv.boundX+2*buffer) // scale the width of the map to the page
@@ -54,7 +54,19 @@ object Pdf {
         bound.getHeight() / (csv.boundY+2*buffer) // scale the height of the map to the page
     }
     m.scale(scale, scale)
-    m.translate(-csv.minX+buffer, -csv.minY+buffer)
+
+    // translate to center the map in the page
+    // origin is the lower left corner of the map
+    {
+      val pageWidth = bound.getWidth / scale
+      val mapWidth = csv.boundX
+      val xMargin = (pageWidth - mapWidth) / 2f
+      val pageHeight = bound.getHeight / scale
+      val mapHeight = csv.boundY
+      val yMargin = (pageHeight - mapHeight) / 2f
+      m.translate(-csv.minX + xMargin, -csv.minY + yMargin)
+    }
+
     cos.transform(m)
   }
 
