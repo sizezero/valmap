@@ -24,25 +24,25 @@ Like our world, the sun rises in the east and sets in the west. On a clear morni
 
 The sky contains the [Ygdrasil World Tree](https://www.reddit.com/r/valheim/comments/17pnu04/yggdrasil_overlaid_on_the_map/) whose trunk starts in the east and fans out into the west.
 
-TODO: world-tree.png
+![world tree](http://kleemann.org/valheim/valmap-readme/world-tree.png)
 
 Raising the ground from a single spot creates an obilisk that is guaranteed to have four faces in each of the four cardinal directions. On a clear morning and evening it is easy to tell east from west so I stuck a board in the north side to make them useful on cloudy days. I made a lot of these and called them compasses.
 
-TODO: compass.png
+![Compass](http://kleemann.org/valheim/valmap-readme/compass.png)
 
 ### Maintaining Direction
 
 Pulling out the hammer and selecting an item allows you to rotate it in one of 16 degrees. If you align the item with a compass you have a way to see the direction as you walk. If you switch tools and go back to the hammer, the selected item maintains it's previous direction. The bed is a nice item as it is big and has a headboard that you can use for north.
 
-TODO: bed.png
+![Bed](http://kleemann.org/valheim/valmap-readme/bed.png)
 
 The cooking station is kind of nice to because you can build it without a workbench so you can easily stick on on the ground to remember a direction. The cooking station also has "sights" that allow you to use it like a rifle to take a bearing on distant objects. MOBs like to break cooking stations so build a compass if you want a permanent marker.
 
-TODO: cooking-station-sights.png
+![Cooking Station Sights](http://kleemann.org/valheim/valmap-readme/cooking-station-sights.png)
 
-Using these techniques it was fairly easy to build the road from the stones. It only required a lot of tree chopping and a little bridge building when a river was encountered. I don't really have a method of determining how accurate the road is since there could have been some drift. I just have to hope that left and right drift evens out.
+Using these techniques it was fairly easy to build the road from the starting stones. It only required a lot of tree chopping and a little bridge building when a river was encountered. I don't really have a method of determining how accurate the road is since there could have been some drift. I just have to hope that left and right drift evens out.
 
-TODO: long-road.png
+![Long Road](http://kleemann.org/valheim/valmap-readme/long-road.png)
 
 ### Distances
 
@@ -50,15 +50,16 @@ There are three basic ways to measure distances.
 
 1. **Build floorboard or horizontal beams.** This is the most cumbersome but the most accurate. I only use it for very short distances less then ten meters or so.
 2. **Trot in a straight line and time your walk with a stopwatch.** I built a 100m race track and determined that it consistently takes 26 seconds to complete the track in troll armor while carrying the hammer. This is 3.8 m/s. I can use this to calculate distances fairly easily and accurately.
-3. **Estimate.** Just look into the distance and guess. This is the least accurate method but sometimes (like looking over a canyon) there is no alternative.
 
-TODO: racetrack.png
+![Racetrack](http://kleemann.org/valheim/valmap-readme/racetrack.png)
+
+3. **Estimate.** Just look into the distance and guess. This is the least accurate method but sometimes (like looking over a canyon) there is no alternative.
 
 I ended up using (2) the most. Starting from the stones, I can trot in an ortogonal direction and time the distance. To reach a non-orthogonal position I can can combine two orthonal positions. E.g., if I want to reach a spot in the North West, I can first time a path north, then a path west.
 
 ### Mapping
 
-All these coordinates and times can get tricky so it's useful to have a spreadsheet to keep track of this. The spreadsheet has a function ```trott2m(min, sec)=(60*min+sec)*3.8``` which converts troll armor trotting speed to meters. This lets you do something like:
+All these coordinates and times can get tricky so it's useful to have a spreadsheet to keep track of it all. The spreadsheet has a function ```trott2m(min, sec)=(60*min+sec)*3.8``` which converts troll armor trotting speed to meters. This lets you do something like:
 
 | Glyph | Description | X | Y |
 | ------- | -------------------- | ---- | ---- |
@@ -76,30 +77,42 @@ This creates a daisy chain where each location depends on the location of a prev
 
 My first version of the map was a hand translation of this spreadsheet to graph paper. I used the spreadheet to convert meters to graph paper units but the results were cumbersome, error prone, and not resiliant to map changes. Here's an early version of the starting continent: Stonia.
 
-TODO: stonia-graph.png
+![graph paper version of Stonia](http://kleemann.org/valheim/valmap-readme/stonia-graph.png)
 
-Since I already had the map data in a spreadsheet I figured a program would help which became this project. The program reads the CSV exported by the spreadsheet and renders all the glyphs in a PDF. Some of the features include:
+Since I already had the map data in a spreadsheet I figured a program would make all this easier. This scala program reads the CSV exported by the spreadsheet and renders all the glyphs in a PDF. Some of the features include:
 
 * chooses portrait or landscape for the best use of space
 * scales the map within the page
 * centers the map on the page
 * provides efficient margins
 * provides location specific glyphs
-  * ***Stones***: TODO: glyph-stones.png the starting stones location
-  * ***Boss***: TODO: glyph-boss.png a Forsaken shrine
-  * ***Compass***: TODO: glyph-compass.png an obelisk with a board facing north
-  * ***Shack***: TODO: glyph-shack.png a fire, bed, repair stations, chests, and some comfort. There are many of these on a continent.
-  * ***Base***: TODO: glyph-base.png like a shack but with farms, smelters, tamed animals, everything you would expect on a full base. There is usually at most one of these on a continent.
-  * ***LineUp, LineRight, LineDiag1, LineDiag2***: TODO: glyph-.png a line in one of the eight cardinal and intercardinal directions. This is useful to emphasize coastlines and biome borders.
-  * ***Road***: TODO: glyph-road.png a horizontal or vertical dashed line that represents the main road.
-  * ***Circle***: TODO: glyph-circle.png a light gray circle that can represent mountain peaks, villages, or other points of interest.
-* ***Grid Lines:*** light gray grid lines are drawn every 100 meters and dark gray grid lines are drawn every kilometer.
-* ***Border:*** an optional bright rectangle is drawn around the extent of the map. This is useful in draft versions but usually turned off for the final version.
+  * ***Stones***: ![Glyph Stones](http://kleemann.org/valheim/valmap-readme/glyph-stones.png) the starting stones location
+  * ***Boss***: ![Glyph Boss](http://kleemann.org/valheim/valmap-readme/glyph-boss.png) a Forsaken shrine
+  * ***Compass***: ![Glyph Compass](http://kleemann.org/valheim/valmap-readme/glyph-compass.png) an obelisk with a board facing north
+  * ***Shack***: ![Glyph Shack](http://kleemann.org/valheim/valmap-readme/glyph-shack.png) a fire, bed, repair stations, chests, and some comfort. There are many of these on a continent.
+  * ***Base***: ![Glyph Base](http://kleemann.org/valheim/valmap-readme/glyph-base.png) like a shack but with farms, smelters, tamed animals, everything you would expect on a full base. There is usually at most one of these on a continent.
+  * ***LineUp, LineRight, LineDiag1, LineDiag2***: ![Glyph Line](http://kleemann.org/valheim/valmap-readme/glyph-line.png) a line in one of the eight cardinal and intercardinal directions. This is useful to emphasize coastlines and biome borders.
+  * ***Road***: ![Glyph Road](http://kleemann.org/valheim/valmap-readme/glyph-road.png) a horizontal or vertical dashed line that represents the main road.
+  * ***Circle***: a light gray circle that can represent mountain peaks, villages, or other points of interest.
+* light gray grid lines are drawn every 100 meters and dark gray grid lines are drawn every kilometer.
+* an optional bright rectangle is drawn around the extent of the map. This is useful in draft versions but usually turned off for the final version.
 
 The generated map is very sparse but is useful to print out and doodle on when exploring. When the continent is fully explored and all points of interest have been noted I print the final version and add details with a fountain pen and colored pencils.
 
-TODO: four images of draft Stonia and TopsyTurvy and Final versions:
+Stonia (the starting continent) draft and final versions:
+
+![Stonia draft](http://kleemann.org/valheim/valmap-readme/stonia-draft.png)
+
+![Stonia final](http://kleemann.org/valheim/valmap-readme/stonia-final.png)
+
+Topsy Turvy (the continent due west of Stonia) draft and final versions:
+
+![Topsy Turvy draft](http://kleemann.org/valheim/valmap-readme/topsyturvy-draft.png)
+
+![Topsy Turvy final](http://kleemann.org/valheim/valmap-readme/topsyturvy-final.png)
 
 Note, the east/west roads on the two continets line up as best I could by sailing west from Stony to Turvy. I'm thinking of using an abstract node and edge diagram to show continents in relation to each other.
 
-TODO: meta-map.png
+![Topsy Turvy final](http://kleemann.org/valheim/valmap-readme/meta-map.png)
+
+It takes approximately one minute to sail a carve between Stonia / Trollfall and Turvy / Land Ho.
