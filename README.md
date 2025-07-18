@@ -32,11 +32,11 @@ Raising the ground from a single spot creates an obilisk that is guaranteed to h
 
 ### Maintaining Direction
 
-Pulling out the hammer and selecting an item allows you to rotate it in one of 16 directions. Four of these directions exactly align with cardinal directions, four with intercardinal directions, and the remaining eight with the secondary intercardinal. If you align the item with a compass you have a way to see the direction as you walk. If you switch tools and go back to the hammer, the selected item maintains it's previous direction. The bed is a nice item as it is big and has a headboard that you can use for north.
+Pulling out the hammer and selecting an item allows you to rotate it in one of 16 directions. Four of these directions exactly align with cardinal directions, four with intercardinal directions, and the remaining eight with the secondary intercardinals. If you align the item with a compass you have a way to see the direction as you walk. If you switch tools and go back to the hammer, the selected item maintains it's previous direction. The bed is a nice item as it is big and has a headboard that you can use for north.
 
 ![Bed](http://kleemann.org/valheim/valmap-readme/bed.png)
 
-The cooking station is kind of nice to because you can build it without a workbench so you can easily stick on on the ground to remember a direction. The cooking station also has "sights" that allow you to use it like a rifle to take a bearing on distant objects. MOBs like to break cooking stations so build a compass if you want a permanent marker.
+The cooking station is kind of nice too because you can build it without a workbench so you can easily stick on on the ground to remember a direction. The cooking station also has "sights" that allow you to use it like a rifle to take a bearing on distant objects. MOBs like to break cooking stations so build a compass if you want a permanent marker.
 
 ![Cooking Station Sights](http://kleemann.org/valheim/valmap-readme/cooking-station-sights.png)
 
@@ -95,7 +95,7 @@ Since I already had the map data in a spreadsheet, I figured a program would mak
   * ***LineUp, LineRight, LineDiag1, LineDiag2***: ![Glyph Line](http://kleemann.org/valheim/valmap-readme/glyph-line.png) a line in one of the eight cardinal and intercardinal directions. This is useful to emphasize coastlines and biome borders.
   * ***Road***: ![Glyph Road](http://kleemann.org/valheim/valmap-readme/glyph-road.png) a horizontal or vertical dashed line that represents the main road.
   * ***Circle***: a light gray circle that can represent mountain peaks, villages, or other points of interest.
-* light gray grid lines are drawn every 100 meters and dark gray grid lines are drawn every kilometer.
+* light gray orthogonal grid lines are drawn every 100 meters and dark gray grid lines are drawn every kilometer.
 * an optional bright rectangle is drawn around the extent of the map. This is useful in draft versions but usually turned off for the final version.
 
 The generated map is very sparse but is useful to print out and doodle on when exploring. When the continent is fully explored and all points of interest have been noted I print the final version and add details with a fountain pen and colored pencils.
