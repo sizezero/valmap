@@ -23,8 +23,8 @@ object Pdf {
 
     def setPortrait(): (PDRectangle, Matrix) = (page.getMediaBox(), new Matrix())
 
-    // if we are in landscape mode, add 90d rotation to the transformation
     def setLandscape(): (PDRectangle, Matrix) = {
+    // if we are in landscape mode, add 90d rotation to the page
       page.setRotation(90) // side effect of rotaing the canvas page
       val portraitBound = page.getMediaBox()
       val landscapeBound = PDRectangle(portraitBound.getHeight(), portraitBound.getWidth())
@@ -44,7 +44,7 @@ object Pdf {
       }
     }
 
-    // Set transformation to scale and translate to meter map coordinates
+    // Set transformation to scale to meter map coordinates
     val scale: Float = {
       val pageRatio = bound.getWidth() / bound.getHeight() // the ratio of either the chosen portrait or landscape
       val mapRatio = csv.boundX / csv.boundY
@@ -236,7 +236,7 @@ object Pdf {
     cos.stroke()
   }
 
-  def create(csv: Csv): Either[String, PDDocument] = {
+  def create(csv: Csv): PDDocument = {
     val page = new PDPage(PDRectangle.LETTER)
     val pdf = new PDDocument()
     pdf.addPage(page)
@@ -281,6 +281,6 @@ object Pdf {
     }}
 
     cos.close()
-    Right(pdf)
+    pdf
   }
 }

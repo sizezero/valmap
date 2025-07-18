@@ -6,17 +6,10 @@ def processFile(src: os.Path): Unit = {
   val filename = src.baseName + "." + src.ext
   Csv.parse(filename.toString, os.read.lines.stream(src)) match {
     case Right(csv) => {
-      Pdf.create(csv) match {
-        case Right(doc) => {
-          val outfile = os.pwd / "out" / (src.baseName + ".pdf")
-          doc.save(outfile.toString)
-          doc.close()
-        }
-        case Left(error) => {
-          println(error)
-          sys.exit(1)
-        }
-      }
+      val doc = Pdf.create(csv)
+      val outfile = os.pwd / "out" / (src.baseName + ".pdf")
+      doc.save(outfile.toString)
+      doc.close()
     }
     case Left(error) => {
       println(error)
