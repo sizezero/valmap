@@ -114,6 +114,6 @@ Topsy Turvy (the continent due west of Stonia) draft and final version:
 
 Note, the east/west roads on the two continets line up as best I could by sailing west from Stonia to Turvy. There is one additional map that exists at a higher level than the continent maps. It's an abstract node and edge diagram that shows continents in relation to each other.
 
-![Topsy Turvy final](http://kleemann.org/valheim/valmap-readme/meta-map.png)
+![Topsy Turvy final](http://kleemann.org/valheim/valmap-readme/topmap-cropped.svg)
 
 It takes approximately one minute to sail a karve between Stonia/Trollfall and Turvy/Land Ho.
