@@ -55,7 +55,7 @@ There are three basic ways to measure distances.
 
 3. **Estimate.** Just look into the distance and guess. This is the least accurate method but sometimes (like looking over a canyon) there is no alternative.
 
-I ended up using (2) the most. Starting from the stones, I can trot in an ortogonal direction and time the distance. To reach a non-orthogonal position I can can combine two orthonal positions. E.g., if I want to reach a spot in the North West, I can first time a path north, then a path west.
+I ended up using (2) the most. Starting from the stones, I can trot in an orthogonal direction and time the distance. To reach a non-orthogonal position I can can combine two orthogonal positions. E.g., if I want to reach a spot in the North West, I can first time a path north, then a path west.
 
 ### Mapping
 
