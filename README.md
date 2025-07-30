@@ -106,14 +106,20 @@ Stonia (the starting continent) draft and final version:
 
 ![Stonia final](http://kleemann.org/valheim/valmap-readme/stonia-final.png)
 
+There is a high level map that represents the continents as abstract shapes. It is not supposed to represent the actual shapes and sizes but is instead meant to facilitate sailing. It takes approximately one minute to sail a karve between Stonia/Trollfall and Turvy/Land Ho.
+
+![Topsy Turvy final](http://kleemann.org/valheim/valmap-readme/topmap-cropped.svg)
+
 Topsy Turvy (the continent due west of Stonia) draft and final version:
 
 ![Topsy Turvy draft](http://kleemann.org/valheim/valmap-readme/topsyturvy-draft.png)
 
 ![Topsy Turvy final](http://kleemann.org/valheim/valmap-readme/topsyturvy-final.png)
 
-Note, the east/west roads on the two continets line up as best I could by sailing west from Stonia to Turvy. There is one additional map that exists at a higher level than the continent maps. It's an abstract node and edge diagram that shows continents in relation to each other.
+Lump (the continent due north of Stonia) draft and final version:
 
-![Topsy Turvy final](http://kleemann.org/valheim/valmap-readme/topmap-cropped.svg)
+![Lump draft](http://kleemann.org/valheim/valmap-readme/lump-draft.png)
 
-It takes approximately one minute to sail a karve between Stonia/Trollfall and Turvy/Land Ho.
+![Lump final](http://kleemann.org/valheim/valmap-readme/lump-final.png)
+
+Note: the east/west road in Turvy is at the same lattitude as the east/west road in Stonia. Similarly, the north/south road in Lump is at the same longitude as the north/south road in Stonia.
