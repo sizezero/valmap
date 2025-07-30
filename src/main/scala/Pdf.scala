@@ -163,8 +163,8 @@ object Pdf {
         cos.lineTo(x,y+d)
       }
       case Glyph.LineDiag1 => {
-        cos.moveTo(x+d,y-d)
-        cos.lineTo(x-d,y-d)
+        cos.moveTo(x-d,y-d)
+        cos.lineTo(x+d,y+d)
       }
       case Glyph.LineRight => {
         cos.moveTo(x-d,y)
