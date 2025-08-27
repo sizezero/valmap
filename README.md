@@ -122,7 +122,7 @@ Lump (the continent due north of Stonia) draft and final version:
 
 ![Lump final](http://kleemann.org/valheim/valmap-readme/lump-final.png)
 
-South Bounty (the continent dur north of Lump and Topsy) draft and final version:
+South Bounty (the continent due north of Lump and Topsy) draft and final version:
 
 ![South Bounty draft](http://kleemann.org/valheim/valmap-readme/southbounty-draft.png)
 
