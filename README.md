@@ -122,4 +122,10 @@ Lump (the continent due north of Stonia) draft and final version:
 
 ![Lump final](http://kleemann.org/valheim/valmap-readme/lump-final.png)
 
-Note: the east/west road in Turvy is at the same lattitude as the east/west road in Stonia. Similarly, the north/south road in Lump is at the same longitude as the north/south road in Stonia.
+South Bounty (the continent dur north of Lump and Topsy) draft and final version:
+
+![South Bounty draft](http://kleemann.org/valheim/valmap-readme/southbounty-draft.png)
+
+![South Bounty final](http://kleemann.org/valheim/valmap-readme/southbounty-final.png)
+
+Note: the east/west road in Turvy is at the same lattitude as the east/west road in Stonia. Similarly, the north/south road in Lump and South Bounty is at the same longitude as the north/south road in Stonia.
